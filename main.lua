@@ -92,6 +92,7 @@ if conf.build == 'debug' then
   require 'gamestates.debug.pieces'
 end
 require 'entities.docked'
+require 'entities.commited'
 
 -- The global game instance
 game = nil

@@ -96,36 +96,16 @@ function Piece:initialize(world,name,color,x,y)
   self:createSquares(self.matrix)
   -- save original coord
   self.ox,self.oy = x,y
-  Beholder.observe('Right',function()
-    if not self.commited then self:rotr() end
-  end)
+end
+
+function Piece:move(x,y)
+end
+
+function Piece:drop(x,y)
 end
 
 function Piece:filter(other)
-  if other.isBox then
-    return 'cross'
-  else
-    return nil
-  end
-end
-
-function Piece:moveAndQuery(x,y)
-  local dx,dy = self.x-x, self.y-y
-  self.targets = {}
-  self.commited = false
-  self.x,self.y = self.world:move(self,x,y,self.filter)
-  for i=1,#self.squares do
-    local s = self.squares[i]
-    s.x,s.y = self.world:move(s,s.x-dx,s.y-dy,self.filter)
-    local cx,cy = s:getCenter()
-    local items,len = self.world:queryPoint(cx,cy,function(item)
-      return item.isBox or item.class.name == 'Square' and item.piece.commited
-    end)
-    if len == 1 and items[1].isBox then
-      table.insert(self.targets,items[1])
-      items[1].color = {255,0,0,255}
-    end
-  end
+  return other.isBox and 'cross' or nil
 end
 
 function Piece:getOrder()
@@ -141,33 +121,26 @@ function Piece:moveSquares(x,y)
   end
 end
 
-function Piece:move(x,y)
-  local dx,dy = self.x-x, self.y-y
-  self.commited = false
-  self.targets = {}
-  self.x,self.y = self.world:move(self,x,y,self.filter)
-  for i=1,#self.squares do
-    local s = self.squares[i]
-    s.x,s.y = self.world:move(s,s.x-dx,s.y-dy,self.filter)
+function Piece:checkCells()
+  local c = 0
+  -- check that cells are empty below every squares
+  for _,s in ipairs(self.squares) do
+    local cx,cy = s:getCenter()
+    local items,len = self.world:queryPoint(cx,cy,function(item)
+      return item.class.name == 'Square' and item ~= s
+    end)
+    if len == 1 and items[1].isBox then
+      c = c + 1
+    end
   end
+  return c
 end
 
-function Piece:commit()
-  local c = #self.targets
-  if c < self:getOrder() then
-    self:move(self.ox,self.oy)
-    return 0
-  end
-  local count = self.commited and 0 or self:getOrder()
-  self.commited = true
-  -- local dx = self.targets[1].x-self.squares[1].x
-  -- local dy = self.targets[1].y-self.squares[1].y
-  -- self.x,self.y = self.world:move(self,self.x-dx,self.y-dy)
-  for i=1,c do
-    local s,t = self.squares[i],self.targets[i]
-    s.x,s.y = self.world:move(s,t.x,t.y,self.filter)
-  end
-  return count
+function Piece:moveToCurrentCell()
+  x,y = self:getCenter()
+  x,y = game.grid:convertCoords('world','cell',x,y)
+  x,y = game.grid:convertCoords('cell','world',x,y)
+  self:moveSquares(x,y)
 end
 
 function Piece:draw()

@@ -7,9 +7,12 @@ function Docked:enteredState()
   Beholder.observe('Selected',self,function() end)
   Beholder.observe('Moved',self,function(x,y) self:move(x,y) end)
   Beholder.observe('Released',self,function(x,y) self:drop(x,y) end)
+  self.idRotr = Beholder.observe('Right',function() self:rotr() end)
 end
 
-function Docked:exitedStated()
+function Docked:exitedState()
+  Log.debug('Exited state "Docked"')
+  Beholder.stopObserving(self.idRotr)
 end
 
 function Docked:move(x,y)
@@ -17,19 +20,14 @@ function Docked:move(x,y)
 end
 
 function Docked:drop(x,y)
-  local dx,dy,c = self.x-x,self.y-y,0
-  for i=1,#self.squares do
-    local s = self.squares[i]
-    local cx,cy = s:getCenter()
-    local items,len = self.world:queryPoint(cx,cy,function(item)
-      return item.class.name == 'Square' and item ~= s
-    end)
-    if len == 1 and items[1].isBox then
-      c = c +1
-    end
-  end
-  if c < self:getOrder() then
+  if self:checkCells() < self:getOrder() then
+    -- rollback to dock position
     self:moveSquares(self.ox,self.oy)
+  else
+    -- commit to the current position
+    self:moveToCurrentCell()
+    Beholder.trigger('Commit')
+    self:gotoState('Commited')
   end
 end
 

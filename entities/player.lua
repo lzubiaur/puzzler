@@ -54,21 +54,21 @@ function Player:goToCheckPoint()
 end
 
 function Player:draw()
-  -- print(self:getCenterToScreen()) -- TODO why first x is different?
-  g.setColor(255,255,255,255)
-  -- g.setColor(to_rgb(palette.main))
-  if self.angle == 0 then
-    g.rectangle('line', self.x,self.y,self.w,self.h)
-    g.rectangle('fill', self.x+10,self.y+10,self.w-20,self.h-20)
-  else
-    g.push()
-      local ox,oy = self:getCenter()
-      g.translate(ox,oy)
-      g.rotate(math.rad(self.angle))
-      g.rectangle('line', -self.w/2,-self.h/2,self.w,self.h)
-      g.rectangle('fill', -self.w/2+10,-self.h/2+10,self.w-20,self.h-20)
-    g.pop()
-  end
+  -- -- print(self:getCenterToScreen()) -- TODO why first x is different?
+  -- g.setColor(255,255,255,255)
+  -- -- g.setColor(to_rgb(palette.main))
+  -- if self.angle == 0 then
+  --   g.rectangle('line', self.x,self.y,self.w,self.h)
+  --   g.rectangle('fill', self.x+10,self.y+10,self.w-20,self.h-20)
+  -- else
+  --   g.push()
+  --     local ox,oy = self:getCenter()
+  --     g.translate(ox,oy)
+  --     g.rotate(math.rad(self.angle))
+  --     g.rectangle('line', -self.w/2,-self.h/2,self.w,self.h)
+  --     g.rectangle('fill', -self.w/2+10,-self.h/2+10,self.w-20,self.h-20)
+  --   g.pop()
+  -- end
 end
 
 function Player:filter(other)

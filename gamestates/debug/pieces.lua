@@ -9,10 +9,10 @@ function PiecesDebug:enteredState()
   self.commited = 0
 
   self.grid = EditGrid.grid(self.camera,{
-    size = conf.squareSize*10,
+    size = conf.squareSize,
     subdivisions = 10,
     color = {128, 140, 250},
-    drawScale = true,
+    drawScale = false,
     xColor = {255, 255, 0},
     yColor = {0, 255, 255},
     fadeFactor = 0.3,
@@ -40,7 +40,28 @@ function PiecesDebug:enteredState()
     Piece:new(self.world,names[i],colors[i],i*50,0):gotoState('Docked')
   end
 
-  self.box = Box:new(self.world,0,100)
+  self.box = Box:new(self.world,self.grid:convertCoords('cell','world',1,5))
+end
+
+function PiecesDebug:drawGridInfo()
+  local mx,my = Push:toGame(love.mouse.getPosition())
+  local oScreenx, oScreeny = self.camera:toScreen(0, 0)
+  local mWorldx, mWorldy = self.camera:toWorld(mx, my)
+  local camx, camy = self.camera:getPosition()
+  local scale = self.camera:getScale()
+  local cx, cy = self.grid:convertCoords("screen","cell", mx, my)
+  love.graphics.printf(
+    "Camera position: (" ..
+    camx .. ", " .. camy ..
+    ")\nCamera zoom: " ..
+    scale ..
+    "\nMouse position on Grid: (" ..
+    mWorldx  .. ", " .. mWorldy ..
+    ")\nCell coordinate under mouse: (" ..
+    cx .. ", " .. cy ..
+    ")\nGrid origin position on screen: (" ..
+    oScreenx .. ", " .. oScreeny .. ")",
+    30, 30, 800, "left")
 end
 
 function PiecesDebug:draw()
@@ -49,6 +70,7 @@ function PiecesDebug:draw()
   g.clear(0,0,0,255)
 
   self.grid:draw()
+  self:drawGridInfo()
   self.grid:push()
     g.setColor(255,255,255,255)
     g.rectangle('line',0,0,self.worldWidth,self.worldHeight)
@@ -78,18 +100,12 @@ function PiecesDebug:mousemoved(x, y, dx, dy, istouch)
   x,y = self.camera:toWorld(Push:toGame(x,y))
   if self.piece then
     Beholder.trigger('Moved',self.piece,x-self.dx,y-self.dy)
-    -- self.box:clear({100,100,100,128})
-    -- self.piece:moveAndQuery(x-self.dx,y-self.dy)
   end
 end
 
 function PiecesDebug:mousereleased(x, y, button, istouch)
   if self.piece then
-    -- local count = self.piece:commit()
-    -- self.commited = self.commited + count
-    -- if self.commited == self.box.count then
-    --   Log.info('Solved')
-    -- end
+    x,y = self.camera:toWorld(Push:toGame(x,y))
     Beholder.trigger('Released',self.piece,x-self.dx,y-self.dy)
     self.piece = nil
   end
