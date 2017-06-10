@@ -2,7 +2,7 @@
 local Entity = require 'entities.entity'
 local Square = require 'entities.square'
 
-local Piece = Class('Piece',Entity)
+local Piece = Class('Piece',Entity):include(Stateful)
 
 local pieces = {
   -- monocube
@@ -57,7 +57,7 @@ end
 
 -- Rotate Right
 function Piece:rotr()
-  self.matrix = matrix.rotr(self.matrix)
+  self.matrix = Matrix.rotr(self.matrix)
   self:createSquares(self.matrix)
 end
 
@@ -130,6 +130,15 @@ end
 
 function Piece:getOrder()
   return #self.squares
+end
+
+function Piece:moveSquares(x,y)
+  local dx,dy = self.x-x, self.y-y
+  self.x,self.y = self.world:move(self,x,y,self.filter)
+  for i=1,#self.squares do
+    local s = self.squares[i]
+    s.x,s.y = self.world:move(s,s.x-dx,s.y-dy,self.filter)
+  end
 end
 
 function Piece:move(x,y)

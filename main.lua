@@ -50,7 +50,9 @@ Timer     = require 'modules.hump.timer'
 Hue       = require 'modules.colors'
 Parallax  = require 'modules.parallax'
 Binser    = require 'modules.binser'
-matrix    = require 'modules.matrix'
+Matrix    = require 'modules.matrix'
+EditGrid  = require 'modules.editgrid'
+
 
 -- Love2D shortcuts
 g = love.graphics
@@ -89,6 +91,7 @@ if conf.build == 'debug' then
   require 'gamestates.debug.play_debug'
   require 'gamestates.debug.pieces'
 end
+require 'entities.docked'
 
 -- The global game instance
 game = nil

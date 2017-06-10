@@ -60,8 +60,9 @@ function Play:enteredState()
     end)
   end)
 
+  -- Observe all events (for debug purpose)
   if conf.build == 'debug' then
-    Beholder.observe(function(...) Log.debug('Event triggered > ',...) end)
+    -- Beholder.observe(function(...) Log.debug('Event triggered > ',...) end)
   end
 
   self:pushState('GameplayIn')
