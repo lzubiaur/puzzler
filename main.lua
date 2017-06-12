@@ -53,15 +53,8 @@ Binser    = require 'modules.binser'
 Matrix    = require 'modules.matrix'
 EditGrid  = require 'modules.editgrid'
 
-
 -- Love2D shortcuts
 g = love.graphics
-
--- Load LoveDebug module
-if conf.build == 'debug' then
-  Debug = require 'modules.debug-output'
-  -- LoveDebug = require 'modules.lovedebug'
-end
 
 -- Log level
 Log.level = conf.build == 'debug' and 'debug' or 'warn'
@@ -85,11 +78,12 @@ require 'gamestates.loading'
 require 'gamestates.start'
 require 'gamestates.play'
 require 'gamestates.paused'
+require 'gamestates.level'
 require 'gamestates.transitions'
 require 'gamestates.win'
 if conf.build == 'debug' then
-  require 'gamestates.debug.play_debug'
-  require 'gamestates.debug.pieces'
+  require 'gamestates.debug'
+  require 'gamestates.poc.pieces'
 end
 require 'entities.docked'
 require 'entities.commited'
@@ -103,10 +97,6 @@ function love.load()
 
   -- setBackgroundColor doesnt work with push
   -- love.graphics.setBackgroundColor(0,0,0)
-
-  if conf.build == 'debug' then
-    Debug.init()
-  end
 
   -- TODO get info about lua/luajit version
   Log.info(_VERSION)

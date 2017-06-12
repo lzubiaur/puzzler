@@ -1,11 +1,8 @@
 -- play.lua
 
 local Game   = require 'common.game'
-local Ground = require 'entities.ground'
 local Player = require 'entities.player'
 local Entity = require 'entities.entity'
-local Checkpoint = require 'entities.checkpoint'
-local Piece = require 'entities.piece'
 
 local Play = Game:addState('Play')
 
@@ -47,6 +44,20 @@ function Play:enteredState()
   local px, py = self.player:getCenter()
   self.camera:setPosition(x + conf.camOffsetX, y)
 
+  -- Create the grid
+  self.grid = EditGrid.grid(self.camera,{
+    size = conf.squareSize,
+    subdivisions = 10,
+    color = {128, 140, 250},
+    drawScale = false,
+    xColor = {255, 255, 0},
+    yColor = {0, 255, 255},
+    fadeFactor = 0.3,
+    textFadeFactor = 0.5,
+    hideOrigin = false,
+    -- interval = 200
+  })
+
   self.parallax = Parallax(conf.width,conf.height, {offsetX = 0, offsetY = 0})
   self.parallax:addLayer('layer1',1,{ relativeScale = 0.4 })
   self.parallax:addLayer('layer2',1,{ relativeScale = 0.8 })
@@ -65,7 +76,7 @@ function Play:enteredState()
     -- Beholder.observe(function(...) Log.debug('Event triggered > ',...) end)
   end
 
-  self:pushState('GameplayIn')
+  self:pushState('Level')
 end
 
 function Play:exitedState()
@@ -104,6 +115,18 @@ function Play:drawEntities(l,t,w,h)
     Lume.each(items,'draw')
 end
 
+function Play:drawBeforeCamera()
+end
+
+function Play:drawAfterCamera()
+  g.setColor(255,255,255,255)
+  g.print({
+    {to_rgb(palette.text)}, 'Esc: quit\n',
+    {to_rgb(palette.text)}, 'd: switch debug mode\n',
+    {to_rgb(palette.text)}, 'p: pause\n',
+  }, conf.width*.5,conf.height*.5)
+end
+
 function Play:draw()
   Push:start()
   -- g.clear(to_rgb(palette.bg))
@@ -111,17 +134,15 @@ function Play:draw()
 
   -- self:drawParallax()
 
-  g.setColor(255,255,255,255)
-  g.print({
-    {to_rgb(palette.text)}, 'Esc: quit\n',
-    {to_rgb(palette.text)}, 'd: switch debug mode\n',
-    {to_rgb(palette.text)}, 'p: pause\n',
-  }, conf.width*.5,conf.height*.5)
+  self:drawBeforeCamera()
 
   self.camera:draw(function(l,t,w,h)
     g.rectangle('line',0,0,self.worldWidth,self.worldHeight)
     self:drawEntities(l,t,w,h) -- Call a function so it can be override by other state
   end)
+
+  self:drawAfterCamera()
+
   Push:finish()
 end
 
@@ -136,16 +157,15 @@ function Play:onResetGame()
   self:pushState('GameplayIn')
 end
 
-function Play:update(dt)
-  Timer.update(dt)
-  -- self:updateShaders(dt)
-
-  -- Update visible entities
+-- Update visible entities
+function Play:updateEntities(dt)
   -- TODO add a padding parameter to update outside the visible windows
   local l,t,h,w = self.camera:getVisible()
   local items,len = self.world:queryRect(l,t,w,h)
   Lume.each(items,'update',dt)
+end
 
+function Play:updateCamera(dt)
   -- Move the camera
   -- TODO smooth the camera. X doesnt work smoothly
   -- TODO Check Lume.smooth instead of lerp for X (and y?)
@@ -154,6 +174,13 @@ function Play:update(dt)
   self.camera:setPosition(px + conf.camOffsetX, Lume.lerp(y,py,0.05))
   self.parallax:setTranslation(px,py)
   -- self.parallax:update(dt) -- not required
+end
+
+function Play:update(dt)
+  Timer.update(dt)
+  -- self:updateShaders(dt)
+  self:updateEntities(dt)
+  self:updateCamera(dt)
 end
 
 function Play:touchpressed(id, x, y, dx, dy, pressure)
@@ -174,9 +201,9 @@ function Play:keypressed(key, scancode, isrepeat)
   elseif key == 'x' then
     self:pushState('PiecesDebug')
   elseif key == 'd' then
-    self:pushState('PlayDebug')
+    self:pushState('GridDebbug')
   elseif key == 's' then
-    -- enable/disable volume
+    -- enable/disable volume...
   end
 end
 

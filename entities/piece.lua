@@ -122,18 +122,19 @@ function Piece:moveSquares(x,y)
 end
 
 function Piece:checkCells()
-  local c = 0
-  -- check that cells are empty below every squares
+  local free,taken = 0,0
   for _,s in ipairs(self.squares) do
     local cx,cy = s:getCenter()
     local items,len = self.world:queryPoint(cx,cy,function(item)
       return item.class.name == 'Square' and item ~= s
     end)
     if len == 1 and items[1].isBox then
-      c = c + 1
+      free = free + 1
+    elseif len > 0 then
+      taken = taken + 1
     end
   end
-  return c
+  return free,taken
 end
 
 function Piece:moveToCurrentCell()
@@ -144,8 +145,8 @@ function Piece:moveToCurrentCell()
 end
 
 function Piece:draw()
-  g.setColor(0,255,255,255)
-  g.rectangle('fill',self.x,self.y,self.w,self.h)
+  -- g.setColor(0,255,255,255)
+  -- g.rectangle('line',self.x,self.y,self.w,self.h)
 end
 
 function Piece:update()

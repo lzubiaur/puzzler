@@ -4,19 +4,30 @@ local Piece = require 'entities.piece'
 local Docked = Piece:addState('Docked')
 
 function Docked:enteredState()
-  Beholder.observe('Selected',self,function() end)
-  Beholder.observe('Moved',self,function(x,y) self:move(x,y) end)
-  Beholder.observe('Released',self,function(x,y) self:drop(x,y) end)
-  self.idRotr = Beholder.observe('Right',function() self:rotr() end)
+  Beholder.trigger('Docked',self)
+
+  Beholder.group(self,function()
+    -- Beholder.observe('Selected',self,function() end)
+    local moved = false
+
+    Beholder.observe('Moved',self,function(x,y)
+      moved = true
+      self:moveSquares(x,y)
+    end)
+
+    Beholder.observe('Released',self,function(x,y)
+      if not moved then
+        self:rotr()
+      else
+        self:drop(x,y)
+      end
+      moved = false
+    end)
+  end)
 end
 
 function Docked:exitedState()
-  Log.debug('Exited state "Docked"')
-  Beholder.stopObserving(self.idRotr)
-end
-
-function Docked:move(x,y)
-  self:moveSquares(x,y)
+  Beholder.stopObserving(self)
 end
 
 function Docked:drop(x,y)
@@ -26,12 +37,8 @@ function Docked:drop(x,y)
   else
     -- commit to the current position
     self:moveToCurrentCell()
-    Beholder.trigger('Commit')
     self:gotoState('Commited')
   end
-end
-
-function Docked:moveAndQuery(x,y)
 end
 
 return Docked
