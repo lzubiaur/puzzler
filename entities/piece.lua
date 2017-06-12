@@ -15,8 +15,10 @@ local pieces = {
   -- tetrominoes
   I4 = { {0,0},{0,1},{0,2},{0,3} },
   O4 = { {0,0},{0,1},{1,1},{1,0} },
-  L4 = { {0,2},{0,1},{0,0},{1,0} },
-  S4 = { {0,2},{0,1},{1,1},{1,0} },
+  J4 = { {0,2},{0,1},{0,0},{1,0} },
+  L4 = { {0,0},{1,0},{1,1},{1,2} },
+  Z4 = { {0,2},{0,1},{1,1},{1,0} },
+  S4 = { {0,0},{0,1},{1,1},{1,2} },
   T4 = { {0,1},{1,1},{2,1},{1,0} },
   -- pentominoes
   F5 = { {2,2},{1,2},{1,1},{1,0},{0,1} },
@@ -59,6 +61,11 @@ end
 function Piece:rotr()
   self.matrix = Matrix.rotr(self.matrix)
   self:createSquares(self.matrix)
+end
+
+function Piece:mirror()
+  self.matrix = Matrix.invert(self.matrix)
+  self.createSquares(self.matrix)
 end
 
 function Piece:createSquares(p)

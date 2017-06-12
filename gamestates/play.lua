@@ -80,7 +80,7 @@ function Play:enteredState()
 end
 
 function Play:exitedState()
-  Log.info 'Exited state Play'
+  Log.info('Exited state Play')
   -- self.music:stop()
   -- TODO clean beholder observers?
   Timer.clear()

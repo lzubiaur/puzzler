@@ -13,12 +13,9 @@ function Win:update(dt)
   self:updateShaders(dt, self.progress.shift, self.progress.alpha)
 end
 
-function Win:drawWorld(l,t,w,h)
-  Play.drawWorld(self,l,t,w,h)
+function Win:drawAfterCamera()
   -- g.setColor(255,255,255,255)
-  g.printf('Thank you',l,t+50,conf.width,'center')
-  g.printf('for playing',l,t+100,conf.width,'center')
-  g.printf('PULSE lite!',l,t+150,conf.width,'center')
+  g.print('Win',200,200)
 end
 
 function Win:touchreleased(id, x, y, dx, dy, pressure)
@@ -26,7 +23,7 @@ function Win:touchreleased(id, x, y, dx, dy, pressure)
 end
 
 function Win:keypressed(key, scancode, isrepeat)
-  if key == 'space' then
+  if key == 'space' or key == 'esc' then
     self:gotoState('Start')
   end
 end

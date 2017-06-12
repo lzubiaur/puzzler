@@ -20,11 +20,6 @@ function PiecesDebug:enteredState()
     c = c:hue_offset(20)
   end
 
-  for i=1,#names do
-    Piece:new(self.world,names[i],colors[i],i*50,0):gotoState('Docked')
-  end
-
-  self.box = Box:new(self.world,self.grid:convertCoords('cell','world',1,5))
 
   local count = 0
   Beholder.observe('Docked',function()
@@ -33,9 +28,16 @@ function PiecesDebug:enteredState()
   Beholder.observe('Commited',function()
     count = count -1
     if count == 0 then
-      Log.info('Solved!')
+      self:pushState('Win')
     end
   end)
+
+  for i=1,#names do
+    Piece:new(self.world,names[i],colors[i],i*50,0):gotoState('Docked')
+  end
+
+  Box:new(self.world,self.grid:convertCoords('cell','world',1,5))
+
 end
 
 function PiecesDebug:mousepressed(x, y, button, istouch)

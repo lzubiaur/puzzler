@@ -13,10 +13,10 @@ local Box = Class('Box',Entity)
 -- }
 
 local box = {
-  { nil,'I4','I4','I4','I4','T4' },
-  { 'L4','Z4','T4','T4','T4',nil },
-  { 'L4','Z4','Z4','O4','O4',nil },
-  { 'L4','L4','Z4','O4','O4',nil },
+  { 'I4','I4','I4','I4','T4',nil },
+  {  nil,'L4','Z4','T4','T4','T4' },
+  {  nil,'L4','Z4','Z4','O4','O4' },
+  {  nil,'L4','L4','Z4','O4','O4' },
 }
 
 function Box:checkSolution()
