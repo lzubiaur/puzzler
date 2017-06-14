@@ -33,6 +33,11 @@ function Entity:getCenter()
   return self.x + self.w / 2, self.y + self.h / 2
 end
 
+function Entity:resize(w,h)
+  self.w,self.h = w,h
+  self.world:update(self,self.x,self.y,self.w,self.h)
+end
+
 -- TODO to be tested. Need to add push:toScreen but it does not work
 function Entity:getCenterToScreen()
   if game.camera then

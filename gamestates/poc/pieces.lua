@@ -7,20 +7,6 @@ local PiecesDebug = Game:addState('POC')
 function PiecesDebug:enteredState()
   Log.info('Entered state "pieces debug"')
 
-  local names = {
-    -- '_1','_2','I3','L3'
-    'I4','O4','L4','S4','T4',
-    -- 'F5','I5','L5','N5','P5','T5','U5','V5','W5','X5','Y5','Z5'
-  }
-
-  c = Hue.new('#ff0000')
-  colors = {}
-  for i=1,10 do
-    table.insert(colors,{to_rgb(c)})
-    c = c:hue_offset(20)
-  end
-
-
   local count = 0
   Beholder.observe('Docked',function()
     count = count + 1
@@ -32,11 +18,35 @@ function PiecesDebug:enteredState()
     end
   end)
 
-  for i=1,#names do
-    Piece:new(self.world,names[i],colors[i],i*50,0):gotoState('Docked')
+  local data,len = assert(love.filesystem.read('resources/puzzles.ser'))
+  local results,len = assert(Binser.deserialize(data))
+  local puzzle = results[1]
+  print(Inspect(results))
+
+  local x,y = self.grid:convertCoords('cell','world',1,5)
+  Box:new(self.world,x,y,puzzle.box)
+
+  -- Transpose the pieces to the origin
+  for _,v in pairs(puzzle.solution) do
+    local x,y = v[1][1],v[1][2]
+    for i=1,#v do
+      x = math.min(x,v[i][1])
+      y = math.min(y,v[i][2])
+    end
+    for i=1,#v do
+      v[i][1] = v[i][1] - x
+      v[i][2] = v[i][2] - y
+    end
   end
 
-  Box:new(self.world,self.grid:convertCoords('cell','world',1,5))
+  local color = Hue.new('#ff0000')
+  local x = 0
+  for k,v in pairs(puzzle.solution) do
+    local p = Piece:new(self.world,v,{to_rgb(color)},x,0)
+    p:gotoState('Docked')
+    color = color:hue_offset(20)
+    x = x + #p.matrix[1] * conf.squareSize + 2
+  end
 
 end
 

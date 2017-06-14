@@ -7,7 +7,7 @@ conf = {
   version = require 'common.version',
   build = require 'common.build', -- release/debug build
   -- The game fixed resolution. Use a 16:9 aspect ratio
-  width = 640, height = 360,
+  width = 360, height = 640,
   -- Bump world cell size. Should be a multiple of the map's tile size.
   cellSize = 64,
   -- Run on a mobile platform?
@@ -98,6 +98,7 @@ function love.load()
   -- setBackgroundColor doesnt work with push
   -- love.graphics.setBackgroundColor(0,0,0)
 
+  Log.info(package.path)
   -- TODO get info about lua/luajit version
   Log.info(_VERSION)
   Log.debug('bit',bit ~= nil)

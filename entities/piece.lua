@@ -6,19 +6,19 @@ local Piece = Class('Piece',Entity):include(Stateful)
 
 local pieces = {
   -- monocube
-  _1 = { {0,0} },
+  O1 = { {0,0} },
   -- dicube
-  _2 = { {0,0},{0,1} },
+  I2 = { {0,0},{0,1} },
   -- tricubes
   I3 = { {0,0},{0,1},{0,2} },
-  L3 = { {0,1},{0,0},{1,0} },
+  V3 = { {0,1},{0,0},{1,0} }, -- also called 'L3'
   -- tetrominoes
   I4 = { {0,0},{0,1},{0,2},{0,3} },
   O4 = { {0,0},{0,1},{1,1},{1,0} },
   J4 = { {0,2},{0,1},{0,0},{1,0} },
-  L4 = { {0,0},{1,0},{1,1},{1,2} },
+  L4 = { {0,0},{1,0},{1,1},{1,2} }, -- mirrored J4
   Z4 = { {0,2},{0,1},{1,1},{1,0} },
-  S4 = { {0,0},{0,1},{1,1},{1,2} },
+  S4 = { {0,0},{0,1},{1,1},{1,2} }, -- mirrored Z4
   T4 = { {0,1},{1,1},{2,1},{1,0} },
   -- pentominoes
   F5 = { {2,2},{1,2},{1,1},{1,0},{0,1} },
@@ -54,21 +54,28 @@ local function to_matrix(t)
     local y = t[i][2]+1
     m[y][x] = 1
   end
-  return m
+  return m,w,h
+end
+
+function Piece.getPieces()
+  return pieces
 end
 
 -- Rotate Right
 function Piece:rotr()
   self.matrix = Matrix.rotr(self.matrix)
-  self:createSquares(self.matrix)
+  self:createSquares()
+  -- local row,col = self.matrix:size()
+  -- self:resize(col*conf.squareSize,row*conf.squareSize)
 end
 
 function Piece:mirror()
   self.matrix = Matrix.invert(self.matrix)
-  self.createSquares(self.matrix)
+  self.createSquares()
+  -- self:resize(self.matrix:size())
 end
 
-function Piece:createSquares(p)
+function Piece:createSquares()
   -- delete old squares
   if self.squares then
     for i=1,#self.squares do
@@ -91,18 +98,17 @@ function Piece:createSquares(p)
   end
 end
 
-function Piece:initialize(world,name,color,x,y)
-  local p = pieces[name]
-  assert(p,'Unknow piece: '..name)
-  self.name,self.commited,self.targets = name,false,{}
-  self.color = color
-  self.matrix = to_matrix(p)
-  -- TODO piece w,h
-  local w,h = conf.squareSize,conf.squareSize
-  Entity.initialize(self,world,x,y,w,h)
-  self:createSquares(self.matrix)
-  -- save original coord
-  self.ox,self.oy = x,y
+function Piece:initialize(world,t,color,x,y)
+  self.color,self.ox,self.oy = color,x,y
+  if type(t) == 'string' then
+    t = pieces[t]
+    assert(t,'Unknow piece')
+    self.name = t
+  end
+  local w,h
+  self.matrix,w,h = to_matrix(t)
+  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize)
+  self:createSquares()
 end
 
 function Piece:move(x,y)
@@ -145,15 +151,21 @@ function Piece:checkCells()
 end
 
 function Piece:moveToCurrentCell()
-  x,y = self:getCenter()
+  -- Using EditGrid
+  local x,y = self:getCenter()
   x,y = game.grid:convertCoords('world','cell',x,y)
   x,y = game.grid:convertCoords('cell','world',x,y)
+  -- Using bump's grid
+  -- local x,y = self.world:toWorld(self.world:toCell(self:getCenter()))
+  -- Using Tiled grid
+  -- local x,y = self.map:convertPixelToTile(self:getCenter())
+  -- x,y = self.map:converTileToPixel(x,y)
   self:moveSquares(x,y)
 end
 
 function Piece:draw()
-  -- g.setColor(0,255,255,255)
-  -- g.rectangle('line',self.x,self.y,self.w,self.h)
+  g.setColor(0,255,255,255)
+  g.rectangle('line',self.x,self.y,self.w,self.h)
 end
 
 function Piece:update()

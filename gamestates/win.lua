@@ -23,7 +23,7 @@ function Win:touchreleased(id, x, y, dx, dy, pressure)
 end
 
 function Win:keypressed(key, scancode, isrepeat)
-  if key == 'space' or key == 'esc' then
+  if key == 'space' or key == 'escape' then
     self:gotoState('Start')
   end
 end
