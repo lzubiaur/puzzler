@@ -15,6 +15,10 @@ function Commited:enteredState()
     Beholder.observe('Released',self,function(x,y)
       self:drop(x,y)
     end)
+
+    Beholder.observe('Cancelled',self,function()
+      self:drop(x,y)
+    end)
   end)
 end
 

@@ -17,10 +17,16 @@ function Docked:enteredState()
 
     Beholder.observe('Released',self,function(x,y)
       if not moved then
-        self:rotr()
+        -- Right rotate the piece
+        -- self:rotr()
       else
         self:drop(x,y)
       end
+      moved = false
+    end)
+
+    Beholder.observe('Cancelled',self,function()
+      self:drop(x,y)
       moved = false
     end)
   end)
