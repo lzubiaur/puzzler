@@ -17,9 +17,9 @@ local function convert(filename)
         table.insert(box,row)
       elseif i == 1 then
         local words = {}
-        for word in string.gmatch(line,'(%d,%d)') do
+        for word in string.gmatch(line,'(%d+,%d+)') do
           local t = {}
-          for i in string.gmatch(word,'%d') do
+          for i in string.gmatch(word,'%d+') do
             table.insert(t,tonumber(i))
           end
           table.insert(words,t)
@@ -30,11 +30,21 @@ local function convert(filename)
       i = i + 1
     end
   end
+  print(Inspect(solution))
+  print('---')
   return {
     box = box,
     solution = solution
   }
 end
 
-Binser.writeFile(path,convert('convert/puzzles/01.txt'))
-Binser.appendFile(path,convert('convert/puzzles/02.txt'))
+Binser.writeFile(path,
+convert('puzzles/raw/01.txt'),
+convert('puzzles/raw/02.txt'),
+convert('puzzles/raw/03.txt'))
+
+local results,len = Binser.readFile(path)
+for i=1,len do
+  print(Inspect(results[i].solution))
+  print('---')
+end

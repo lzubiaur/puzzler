@@ -7,6 +7,7 @@ local PiecesDebug = Game:addState('POC')
 function PiecesDebug:enteredState()
   Log.info('Entered state "pieces debug"')
 
+  local currentLevel = 3
   local count = 0
   Beholder.observe('Docked',function()
     count = count + 1
@@ -20,8 +21,7 @@ function PiecesDebug:enteredState()
 
   local data,len = assert(love.filesystem.read('resources/puzzles.ser'))
   local results,len = assert(Binser.deserialize(data))
-  local puzzle = results[1]
-  print(Inspect(results))
+  local puzzle = results[currentLevel]
 
   local x,y = self.grid:convertCoords('cell','world',1,5)
   Box:new(self.world,x,y,puzzle.box)
@@ -38,6 +38,7 @@ function PiecesDebug:enteredState()
       v[i][2] = v[i][2] - y
     end
   end
+  print(Inspect(puzzle.solution))
 
   local color = Hue.new('#ff0000')
   local x = 0
