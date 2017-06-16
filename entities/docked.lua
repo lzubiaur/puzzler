@@ -7,27 +7,31 @@ function Docked:enteredState()
   Beholder.trigger('Docked',self)
 
   Beholder.group(self,function()
-    -- Beholder.observe('Selected',self,function() end)
-    local moved = false
+    local first,moving = true,nil
 
-    Beholder.observe('Moved',self,function(x,y)
-      moved = true
-      self:moveSquares(x,y)
+    Beholder.observe('Moved',self,function(x,y,dx,dy)
+      if first then
+        moving = dx == 0
+        first = false
+      end
+      Log.debug(dx,first,moving)
+      if moving then
+        self:moveSquares(x,y)
+      end
     end)
 
     Beholder.observe('Released',self,function(x,y)
-      if not moved then
-        -- Right rotate the piece
-        -- self:rotr()
-      else
+      if moving then
         self:drop(x,y)
       end
-      moved = false
+      first = true
     end)
 
     Beholder.observe('Cancelled',self,function()
-      self:drop(x,y)
-      moved = false
+      if moving then
+        self:drop(x,y)
+      end
+      first = true
     end)
   end)
 end

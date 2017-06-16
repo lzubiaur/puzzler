@@ -13,13 +13,31 @@ function Pane:initialize(world,x,y,w,h)
       return item.class.name == 'Piece'
     end)
   end)
+
+  local first,moving = true
+
   Beholder.observe('Moved',self,function(x,y,dx,dy)
-    if dy < 1 then
+    if first then
+      moving = dy == 0
+      first = false
+    end
+    if moving then
+      if self.x+dx > 0 then return end
       for i=1,len do
         local p = pieces[i]
-        p:moveSquares(p.x+dx,p.y)
+        p.ox = p.x+dx
+        p:moveSquares(p.ox,p.y)
       end
+      self:teleport(self.x+dx,self.y)
     end
+  end)
+
+  Beholder.observe('Released',self,function()
+    first = true
+  end)
+
+  Beholder.observe('Cancelled',self,function()
+    first = true
   end)
 end
 
