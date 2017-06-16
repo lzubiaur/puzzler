@@ -163,6 +163,10 @@ function love.mousemoved(x, y, dx, dy, istouch)
   game:mousemoved(x,y,dx,dy,istouch)
 end
 
+function love.mousefocus(focus)
+  game:mousefocus(focus)
+end
+
 -- function love.wheelmoved( x, y )
 -- end
 

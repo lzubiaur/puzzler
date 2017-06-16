@@ -104,6 +104,9 @@ end
 function Game:mousemoved(x, y, dx, dy, istouch)
 end
 
+function Game:mousefocus(focus)
+end
+
 -- function love.wheelmoved( x, y )
 -- end
 
