@@ -1,11 +1,13 @@
 local Game = require 'common.game'
 local Piece = require 'entities.piece'
 local Box = require 'entities.box'
+local Pane = require 'entities.pane'
 
 local PiecesDebug = Game:addState('POC')
 
 function PiecesDebug:enteredState()
   Log.info('Entered state "pieces debug"')
+  self.entities = {}
 
   local currentLevel = 3
   local count = 0
@@ -27,18 +29,19 @@ function PiecesDebug:enteredState()
   Box:new(self.world,x,y,puzzle.box)
 
   -- Transpose the pieces to the origin
+  local maxh = 0
   for _,v in pairs(puzzle.solution) do
     local x,y = v[1][1],v[1][2]
-    for i=1,#v do
+    for i=2,#v do
       x = math.min(x,v[i][1])
       y = math.min(y,v[i][2])
     end
     for i=1,#v do
       v[i][1] = v[i][1] - x
       v[i][2] = v[i][2] - y
+      maxh = math.max(maxh,v[i][2])
     end
   end
-  print(Inspect(puzzle.solution))
 
   local color = Hue.new('#ff0000')
   local x = 0
@@ -49,34 +52,48 @@ function PiecesDebug:enteredState()
     x = x + #p.matrix[1] * conf.squareSize + 2
   end
 
+  Pane:new(self.world,0,0,x,maxh * conf.squareSize)
+
 end
 
 function PiecesDebug:mousepressed(x, y, button, istouch)
   local x,y = self.camera:toWorld(Push:toGame(x,y))
   local items, len = self.world:queryPoint(x,y,function(item)
-    return item.class.name == 'Square' and not item.isBox
+    return
+      (item.class.name == 'Square' and not item.isBox) or
+      item.class.name == 'Pane'
   end)
   for i=1,len do
-    if items[i].piece then
-      self.piece = items[i].piece
-      self.dx,self.dy = self.piece:getLocalPoint(x,y)
-      Beholder.trigger('Selected',self.piece)
-    end
+    local ent = items[i].piece and items[i].piece or items[i]
+    local dx,dy = ent:getLocalPoint(x,y)
+    Beholder.trigger('Selected',ent)
+    table.insert(self.entities,{entity=ent,dx=dx,dy=dy})
   end
 end
 
 function PiecesDebug:mousemoved(x, y, dx, dy, istouch)
+  dx,dy = Push:toGame(x-dx,y-dy)
+  dx,dy = self.camera:toWorld(dx and dx or 0,dy and dy or 0)
   x,y = self.camera:toWorld(Push:toGame(x,y))
-  if self.piece then
-    Beholder.trigger('Moved',self.piece,x-self.dx,y-self.dy)
+  for _,v in ipairs(self.entities) do
+    Beholder.trigger('Moved',v.entity,x-v.dx,y-v.dy,x-dx,y-dy)
   end
 end
 
 function PiecesDebug:mousereleased(x, y, button, istouch)
-  if self.piece then
-    x,y = self.camera:toWorld(Push:toGame(x,y))
-    Beholder.trigger('Released',self.piece,x-self.dx,y-self.dy)
-    self.piece = nil
+  x,y = self.camera:toWorld(Push:toGame(x,y))
+  for _,v in ipairs(self.entities) do
+    Beholder.trigger('Released',v.entity,x-v.dx,y-v.dy)
+  end
+  self.entities = {}
+end
+
+function PiecesDebug:mousefocus(focus)
+  if not focus then
+    for _,v in ipairs(self.entities) do
+      Beholder.trigger('Cancelled',v.entity)
+    end
+    self.entities = {}
   end
 end
 
