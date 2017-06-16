@@ -30,14 +30,12 @@ local function convert(filename)
       i = i + 1
     end
   end
-  print(Inspect(solution))
+  print(Inspect(box))
   print('---')
-  return {
-    box = box,
-    solution = solution
-  }
+  return { box = box, solution = solution }
 end
 
+-- Using binser.appendFile doesnt work
 Binser.writeFile(path,
 convert('puzzles/raw/01.txt'),
 convert('puzzles/raw/02.txt'),
@@ -45,6 +43,6 @@ convert('puzzles/raw/03.txt'))
 
 local results,len = Binser.readFile(path)
 for i=1,len do
-  print(Inspect(results[i].solution))
+  print(Inspect(results[i].box))
   print('---')
 end
