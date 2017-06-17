@@ -29,12 +29,14 @@ end
 function Commited:drop(x,y)
   local free,taken = self:checkCells()
   if free == 0 and taken == 0 then
-    -- drop outside the box
+    -- Drop outside the box. Move to the orginal position in the pane
     self:moveSquares(game.pane.x+self.ox,self.oy)
     self:gotoState('Docked')
   elseif free < self:getOrder() or taken > 0 then
+    -- Not enough space or is not free. Rollback to the previous position
     self:moveSquares(self.cx,self.cy)
   else
+    -- Commit the current position
     self:moveToCurrentCell()
     self.cx,self.cy = self.x,self.y
   end

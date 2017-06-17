@@ -134,16 +134,20 @@ function Piece:moveSquares(x,y)
   end
 end
 
+-- Returns the numbers of free and not free squares below this pieces but
+-- inside the box.
 function Piece:checkCells()
   local free,taken = 0,0
   for _,s in ipairs(self.squares) do
     local cx,cy = s:getCenter()
     local items,len = self.world:queryPoint(cx,cy,function(item)
-      return item.class.name == 'Square' and item ~= s
+      -- Filters out this square but includes also the box itself
+      return (item.class.name == 'Square' and item ~= s) or item.class.name == 'Box'
     end)
-    if len == 1 and items[1].isBox then
+    -- Only take into account squares that are wihtin the box
+    if len == 2 and (items[1].isBox or items[2].isBox) then
       free = free + 1
-    elseif len > 0 then
+    elseif len > 1 then
       taken = taken + 1
     end
   end
