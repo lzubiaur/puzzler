@@ -118,7 +118,7 @@ function Piece:drop(x,y)
 end
 
 function Piece:filter(other)
-  return other.isBox and 'cross' or nil
+  return other.class.name == 'Cell' and 'cross' or nil
 end
 
 function Piece:getOrder()
@@ -142,10 +142,13 @@ function Piece:checkCells()
     local cx,cy = s:getCenter()
     local items,len = self.world:queryPoint(cx,cy,function(item)
       -- Filters out this square but includes also the box itself
-      return (item.class.name == 'Square' and item ~= s) or item.class.name == 'Box'
+      return
+        (item.class.name == 'Square' and item ~= s) or
+        item.class.name == 'Cell' or
+        item.class.name == 'Box'
     end)
     -- Only take into account squares that are wihtin the box
-    if len == 2 and (items[1].isBox or items[2].isBox) then
+    if len == 2 and (items[1].class.name == 'Cell' or items[2].class.name == 'Cell') then
       free = free + 1
     elseif len > 1 then
       taken = taken + 1

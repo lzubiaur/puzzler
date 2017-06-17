@@ -60,9 +60,7 @@ end
 function PiecesDebug:mousepressed(x, y, button, istouch)
   x,y = self.camera:toWorld(Push:toGame(x,y))
   local items, len = self.world:queryPoint(x,y,function(item)
-    return
-      (item.class.name == 'Square' and not item.isBox) or
-      item.class.name == 'Pane'
+    return item.class.name == 'Square' or item.class.name == 'Pane'
   end)
   for i=1,len do
     local ent = items[i].piece and items[i].piece or items[i]
