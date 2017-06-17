@@ -22,11 +22,10 @@ function Pane:initialize(world,x,y,w,h)
       first = false
     end
     if moving then
-      if self.x+dx > 0 then return end
+      if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
       for i=1,len do
         local p = pieces[i]
-        p.ox = p.x+dx
-        p:moveSquares(p.ox,p.y)
+        p:moveSquares(p.x+dx,p.y)
       end
       self:teleport(self.x+dx,self.y)
     end

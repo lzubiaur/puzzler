@@ -11,7 +11,7 @@ function Docked:enteredState()
 
     Beholder.observe('Moved',self,function(x,y,dx,dy)
       if first then
-        moving = dx == 0
+        moving = dy ~= 0
         first = false
       end
       if moving then

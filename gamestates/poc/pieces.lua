@@ -42,6 +42,7 @@ function PiecesDebug:enteredState()
       maxh = math.max(maxh,v[i][2])
     end
   end
+  maxh = maxh + 1
 
   local color = Hue.new('#ff0000')
   local x = 0
@@ -52,12 +53,12 @@ function PiecesDebug:enteredState()
     x = x + #p.matrix[1] * conf.squareSize + 2
   end
 
-  Pane:new(self.world,0,0,x,maxh * conf.squareSize)
+  self.pane = Pane:new(self.world,0,0,x,maxh * conf.squareSize)
 
 end
 
 function PiecesDebug:mousepressed(x, y, button, istouch)
-  local x,y = self.camera:toWorld(Push:toGame(x,y))
+  x,y = self.camera:toWorld(Push:toGame(x,y))
   local items, len = self.world:queryPoint(x,y,function(item)
     return
       (item.class.name == 'Square' and not item.isBox) or
