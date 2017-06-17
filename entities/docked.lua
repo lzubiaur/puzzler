@@ -14,7 +14,6 @@ function Docked:enteredState()
         moving = dx == 0
         first = false
       end
-      Log.debug(dx,first,moving)
       if moving then
         self:moveSquares(x,y)
       end
@@ -43,7 +42,7 @@ end
 function Docked:drop(x,y)
   if self:checkCells() < self:getOrder() then
     -- rollback to dock position
-    self:moveSquares(self.ox,self.oy)
+    self:moveSquares(game.pane.x + self.ox,self.oy)
   else
     -- commit to the current position
     self:moveToCurrentCell()

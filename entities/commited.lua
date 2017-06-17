@@ -30,7 +30,7 @@ function Commited:drop(x,y)
   local free,taken = self:checkCells()
   if free == 0 and taken == 0 then
     -- drop outside the box
-    self:moveSquares(self.ox,self.oy)
+    self:moveSquares(game.pane.x+self.ox,self.oy)
     self:gotoState('Docked')
   elseif free < self:getOrder() or taken > 0 then
     self:moveSquares(self.cx,self.cy)
