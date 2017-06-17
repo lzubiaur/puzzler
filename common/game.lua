@@ -107,6 +107,24 @@ end
 function Game:mousefocus(focus)
 end
 
+-- Convert from design/game coords to world (aka camera) coords
+function Game:toWorld(x,y)
+  if self.camera then
+    x,y = self.camera:toWorld(x and x or 0,y and y or 0)
+  end
+  return x,y
+end
+
+-- Convert from real/screen coords to world coords
+function Game:screenToWorld(x,y)
+  -- Push:toGame might return nil
+  x,y = Push:toGame(x,y or 0)
+  if self.camera then
+    x,y = self.camera:toWorld(x and x or 0,y and y or 0)
+  end
+  return x,y
+end
+
 -- function love.wheelmoved( x, y )
 -- end
 
