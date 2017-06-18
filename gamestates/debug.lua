@@ -17,7 +17,15 @@ function Debug:enteredState()
 end
 
 function Debug:updateGridInfo()
-  local mx,my = Push:toGame(love.mouse.getPosition())
+  local mx,my = 0,0
+  if love.mouse then
+    mx,my = Push:toGame(love.mouse.getPosition())
+  elseif love.touch then
+    local touches = love.touch.getTouches()
+    if #touches > 0 then
+      mx,my = love.touch.getPosition(touches[1])
+    end
+  end
   local oScreenx, oScreeny = self.camera:toScreen(0, 0)
   local mWorldx, mWorldy = self.camera:toWorld(mx, my)
   local camx, camy = self.camera:getPosition()
