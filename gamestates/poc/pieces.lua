@@ -55,10 +55,11 @@ function PiecesDebug:enteredState()
 
   self.pane = Pane:new(self.world,0,0,x,maxh * conf.squareSize)
 
+  self:pushState('Debug')
 end
 
-function PiecesDebug:mousepressed(x, y, button, istouch)
-  x,y = self.camera:toWorld(Push:toGame(x,y))
+function PiecesDebug:pressed(x, y)
+  x,y = self:screenToWorld(x,y)
   local items, len = self.world:queryPoint(x,y,function(item)
     return item.class.name == 'Square' or item.class.name == 'Pane'
   end)
@@ -70,30 +71,41 @@ function PiecesDebug:mousepressed(x, y, button, istouch)
   end
 end
 
-function PiecesDebug:mousemoved(x, y, dx, dy, istouch)
-  dx,dy = Push:toGame(x-dx,y-dy)
-  dx,dy = self.camera:toWorld(dx and dx or 0,dy and dy or 0)
-  x,y = self.camera:toWorld(Push:toGame(x,y))
+function PiecesDebug:moved(x, y, dx, dy)
+  dx,dy = self:screenToWorld(x-dx,y-dy)
+  x,y = self:screenToWorld(x,y)
   for _,v in ipairs(self.entities) do
     Beholder.trigger('Moved',v.entity,x-v.dx,y-v.dy,x-dx,y-dy)
   end
 end
 
-function PiecesDebug:mousereleased(x, y, button, istouch)
-  x,y = self.camera:toWorld(Push:toGame(x,y))
+function PiecesDebug:released(x, y)
+  x,y = self:screenToWorld(x,y)
   for _,v in ipairs(self.entities) do
     Beholder.trigger('Released',v.entity,x-v.dx,y-v.dy)
   end
   self.entities = {}
 end
 
-function PiecesDebug:mousefocus(focus)
-  if not focus then
-    for _,v in ipairs(self.entities) do
-      Beholder.trigger('Cancelled',v.entity)
-    end
-    self.entities = {}
-  end
+-- function PiecesDebug:mousefocus(focus)
+--   if not focus then
+--     for _,v in ipairs(self.entities) do
+--       Beholder.trigger('Cancelled',v.entity)
+--     end
+--     self.entities = {}
+--   end
+-- end
+
+function PiecesDebug:touchpressed(id, x, y, dx, dy, pressure)
+  self:pressed(x,y)
+end
+
+function PiecesDebug:touchmoved(id, x, y, dx, dy, pressure)
+  self:moved(x,y,dx,dy)
+end
+
+function PiecesDebug:touchreleased(id, x, y, dx, dy, pressure)
+  self:released(x,y,dx,dy)
 end
 
 function PiecesDebug:keypressed(key, scancode, isrepeat)

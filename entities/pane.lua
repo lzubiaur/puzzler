@@ -18,7 +18,6 @@ function Pane:initialize(world,x,y,w,h)
   local first,moving = true
 
   Beholder.observe('Moved',self,function(x,y,dx,dy)
-    Log.debug(dx,dy)
     if first then
       -- moving = dy == 0
       moving = dy < 5

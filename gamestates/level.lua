@@ -29,7 +29,7 @@ function Level:poppedState()
   Log.info('Popped state "Level"')
 end
 
-function Level:mousereleased(x, y, button, istouch)
+function Level:touchreleased(id, x, y, dx, dy, pressure)
   self:pushState('POC')
 end
 

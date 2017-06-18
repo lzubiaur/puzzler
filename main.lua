@@ -133,16 +133,22 @@ function love.resize(w, h)
   Push:resize(w, h)
 end
 
+local touchId = nil
 function love.touchpressed(id, x, y, dx, dy, pressure)
+  if not game.multitouchEnabled and touchId then return end
+  touchId = id
   game:touchpressed(id, x, y, dx, dy, pressure)
 end
 
 function love.touchmoved(id, x, y, dx, dy, pressure)
+  if not game.multitouchEnabled and touchId ~= id then return end
   game:touchmoved(id, x, y, dx, dy, pressure)
 end
 
 function love.touchreleased(id, x, y, dx, dy, pressure)
+  if not game.multitouchEnabled and touchId ~= id then return end
   game:touchreleased(id, x, y, dx, dy, pressure)
+  touchId = nil
 end
 
 function love.keypressed(key, scancode, isrepeat)
