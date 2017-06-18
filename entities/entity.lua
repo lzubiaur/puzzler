@@ -38,9 +38,15 @@ function Entity:resize(w,h)
   self.world:update(self,self.x,self.y,self.w,self.h)
 end
 
-function Entity:teleport(x,h)
-  self.x,self.y = x,h
+function Entity:teleport(x,y)
+  self.x,self.y = x,y
   self.world:update(self,self.x,self.y)
+end
+
+function Entity:move(x,y,filter)
+  local cols,len
+  self.x,self.y,cols,len = self.world:move(self,x,y,filter)
+  return cols,len
 end
 
 -- TODO to be tested. Need to add push:toScreen but it does not work

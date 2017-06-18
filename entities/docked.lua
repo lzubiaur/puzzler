@@ -1,4 +1,6 @@
 -- docked.lua
+-- A piece is in the "Docked" status when it's in the dock pane.
+
 local Piece = require 'entities.piece'
 
 local Docked = Piece:addState('Docked')
@@ -11,7 +13,7 @@ function Docked:enteredState()
 
     Beholder.observe('Moved',self,function(x,y,dx,dy)
       if first then
-        moving = dy ~= 0
+        moving = dy > 5
         first = false
       end
       if moving then
@@ -40,7 +42,7 @@ function Docked:exitedState()
 end
 
 function Docked:drop(x,y)
-  if self:checkCells() < self:getOrder() then
+  if self:queryFreeTakenCells() < self:getOrder() then
     -- rollback to dock position
     self:moveSquares(game.pane.x + self.ox,self.oy)
   else

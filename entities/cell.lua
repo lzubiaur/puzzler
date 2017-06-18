@@ -1,5 +1,4 @@
 -- cell.lua
-
 -- Cell is the square unit of the box entity
 
 local Entity = require 'entities.entity'

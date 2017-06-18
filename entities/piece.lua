@@ -35,6 +35,8 @@ local pieces = {
   Z5 = { {0,2},{1,2},{1,1},{1,0},{2,0} },
 }
 
+-- Convert a piece from cartesian coords to matrix
+-- Returns the matrix and its size (w,h)
 local function to_matrix(t)
   local m = {}
   local w,h = 1,1
@@ -57,22 +59,18 @@ local function to_matrix(t)
   return m,w,h
 end
 
-function Piece.getPieces()
-  return pieces
-end
-
--- Rotate Right
-function Piece:rotr()
-  self.matrix = Matrix.rotr(self.matrix)
+function Piece:initialize(world,t,color,x,y)
+  -- ox,oy are the origin piece position
+  self.color,self.ox,self.oy = color,x,y
+  if type(t) == 'string' then
+    t = pieces[t]
+    assert(t,'Unknow piece')
+    self.name = t
+  end
+  local w,h
+  self.matrix,w,h = to_matrix(t)
+  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize)
   self:createSquares()
-  -- local row,col = self.matrix:size()
-  -- self:resize(col*conf.squareSize,row*conf.squareSize)
-end
-
-function Piece:mirror()
-  self.matrix = Matrix.invert(self.matrix)
-  self.createSquares()
-  -- self:resize(self.matrix:size())
 end
 
 function Piece:createSquares()
@@ -98,19 +96,6 @@ function Piece:createSquares()
   end
 end
 
-function Piece:initialize(world,t,color,x,y)
-  self.color,self.ox,self.oy = color,x,y
-  if type(t) == 'string' then
-    t = pieces[t]
-    assert(t,'Unknow piece')
-    self.name = t
-  end
-  local w,h
-  self.matrix,w,h = to_matrix(t)
-  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize)
-  self:createSquares()
-end
-
 function Piece:move(x,y)
 end
 
@@ -121,22 +106,19 @@ function Piece:filter(other)
   return other.class.name == 'Cell' and 'cross' or nil
 end
 
-function Piece:getOrder()
-  return #self.squares
-end
-
 function Piece:moveSquares(x,y)
   local dx,dy = self.x-x, self.y-y
-  self.x,self.y = self.world:move(self,x,y,self.filter)
-  for i=1,#self.squares do
-    local s = self.squares[i]
-    s.x,s.y = self.world:move(s,s.x-dx,s.y-dy,self.filter)
+  self:teleport(x,y)
+  for _,s in ipairs(self.squares) do
+    -- Just in case we'll need to check collision with cell
+    -- "teleport" should just do fine otherwise
+    s:move(s.x-dx,s.y-dy,self.filter)
   end
 end
 
 -- Returns the numbers of free and not free squares below this pieces but
 -- inside the box.
-function Piece:checkCells()
+function Piece:queryFreeTakenCells()
   local free,taken = 0,0
   for _,s in ipairs(self.squares) do
     local cx,cy = s:getCenter()
@@ -170,12 +152,28 @@ function Piece:moveToCurrentCell()
   self:moveSquares(x,y)
 end
 
+function Piece:getOrder()
+  return #self.squares
+end
+
+-- Rotate Right
+function Piece:rotr()
+  self.matrix = Matrix.rotr(self.matrix)
+  self:createSquares()
+end
+
+-- To be tested
+function Piece:mirror()
+  self.matrix = Matrix.invert(self.matrix)
+  self.createSquares()
+end
+
 function Piece:draw()
   g.setColor(0,255,255,255)
   g.rectangle('line',self.x,self.y,self.w,self.h)
 end
 
-function Piece:update()
-end
+-- function Piece:update()
+-- end
 
 return Piece

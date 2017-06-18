@@ -1,4 +1,6 @@
 -- commited.lua
+-- Piece is in "Commited" status when it's been inserted in the box
+
 local Piece = require 'entities.piece'
 
 local Commited = Piece:addState('Commited')
@@ -27,7 +29,7 @@ function Commited:exitedState()
 end
 
 function Commited:drop(x,y)
-  local free,taken = self:checkCells()
+  local free,taken = self:queryFreeTakenCells()
   if free == 0 and taken == 0 then
     -- Drop outside the box. Move to the orginal position in the pane
     self:moveSquares(game.pane.x+self.ox,self.oy)

@@ -4,39 +4,38 @@
 
 LOVE_ANDROID=../love-10.2-android-source
 
-FILES="build.lua
-version.lua
-conf.lua
-game.lua
-main.lua
-resources
+# debug/release
+BUILD=debug
+
+# e.g. com.mycompany.myproject
+PACKAGE=com.voodoocactus.games.mino
+
+FILES="common
 entities
 gamestates
-modules"
-
-if [ -z "$1" -o "$1" != "debug" -a "$1" != "release" ]; then
-  echo "Usage: $0 debug|release [app]"
-  exit -1
-fi
+modules
+resources
+conf.lua
+main.lua"
 
 # Write the debug/release configuration
-echo "return '$1'" > build.lua
+echo "return '$BUILD'" > common/build.lua
 
-if [ "$2" == "app" ]; then
+if [ "$1" == "app" ]; then
   mkdir -p build
   rm build/game.love
-  zip -r $LOVE_ANDROID/assets/game.love $FILES -x *.DS_Store
+  zip -r build/game.love $FILES -x *.DS_Store
   # Unlock the screen
   adb shell input keyevent 82
   adb shell input swipe 100 100 800 200
 
-  adb shell am force-stop "org.love2d.android"
+  adb shell am force-stop "$PACKAGE"
 
   # Upload the app on the sdcard
   adb push build/game.love /sdcard/game.love
 
   # Start the app Love passing the game file as parameter
-  adb shell am start -S -n "org.love2d.android/.GameActivity" -d "file:///sdcard/game.love"
+  adb shell am start -S -n "$PACKAGE/.GameActivity" -d "file:///sdcard/game.love"
   # Show application log for the tag "SDL/APP" level "V" (verbose) and silence all other tag (*:S)
   adb logcat "SDL/APP":D *:S
   exit 0
@@ -53,9 +52,9 @@ pushd ../love-10.2-android-source
 # ndk-build
 
 # Build the APK and install/start the app
-ant clean && ant $1 && \
-adb uninstall org.love2d.android && \
-adb install "bin/love-android-$1.apk" && \
-adb shell am start -n "org.love2d.android/.GameActivity" && \
+ant clean && ant $BUILD && \
+adb uninstall $PACKAGE && \
+adb install "bin/love-android-$BUILD.apk" && \
+adb shell am start -n "$PACKAGE/.GameActivity" && \
 adb logcat "SDL/APP":D *:S
 popd

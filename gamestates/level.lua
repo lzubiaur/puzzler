@@ -29,6 +29,10 @@ function Level:poppedState()
   Log.info('Popped state "Level"')
 end
 
+function Level:mousereleased(x, y, button, istouch)
+  self:pushState('POC')
+end
+
 function Level:keypressed(key, scancode, isrepeat)
   if key == 'escape' then
     self:gotoState('Start')
