@@ -29,6 +29,16 @@ main.lua
 * Win
 * (Checkpoint)
 
+##
+
+Search for the following
+
+TODO
+HACK
+XXX
+FIXME
+LZU
+
 ## Game states
 
 - Start
