@@ -13,8 +13,8 @@ function Docked:enteredState()
 
     Beholder.observe('Moved',self,function(x,y,dx,dy)
       if first then
-        -- TODO use a relative max dy
-        moving = dy > 5
+        -- XXX use a relative max dy
+        moving = dy > 0
         first = false
       end
       if moving then
@@ -41,6 +41,12 @@ end
 function Docked:exitedState()
   Beholder.stopObserving(self)
 end
+
+-- TODO
+-- function Docked:destroy()
+--   Beholder.stopObserving(self)
+--   Entity.destroy(self)
+-- end
 
 function Docked:drop(x,y)
   if self:queryFreeTakenCells() < self:getOrder() then

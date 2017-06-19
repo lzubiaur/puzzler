@@ -9,9 +9,24 @@ function Commited:enteredState()
   Beholder.trigger('Commited',self)
   -- save commited position
   self.cx,self.cy = self.x,self.y
+  local count,time = false,0,0
   Beholder.group(self,function()
+    Beholder.observe('Selected',self,function()
+      count = count + 1
+      if count == 1 then
+        time = love.timer.getTime()
+      elseif count == 2 then
+        local t = love.timer.getTime() - time
+        if t < .5 then
+          self:dock()
+        end
+        count = 0
+      end
+    end)
+
     Beholder.observe('Moved',self,function(x,y)
       self:moveSquares(x,y)
+      count = 0
     end)
 
     Beholder.observe('Released',self,function(x,y)
@@ -28,12 +43,22 @@ function Commited:exitedState()
   Beholder.stopObserving(self)
 end
 
+-- TODO destroy
+-- function Commited:destroy()
+--   Beholder.stopObserving(self)
+--   Entity.destroy(self)
+-- end
+
+function Commited:dock()
+  self:moveSquares(game.pane.x+self.ox,self.oy)
+  self:gotoState('Docked')
+end
+
 function Commited:drop(x,y)
   local free,taken = self:queryFreeTakenCells()
   if free == 0 and taken == 0 then
     -- Drop outside the box. Move to the orginal position in the pane
-    self:moveSquares(game.pane.x+self.ox,self.oy)
-    self:gotoState('Docked')
+    self:dock()
   elseif free < self:getOrder() or taken > 0 then
     -- Not enough space or is not free. Rollback to the previous position
     self:moveSquares(self.cx,self.cy)

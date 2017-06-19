@@ -10,7 +10,7 @@ function Win:enteredState()
 end
 
 function Win:update(dt)
-  self:updateShaders(dt, self.progress.shift, self.progress.alpha)
+  -- self:updateShaders(dt, self.progress.shift, self.progress.alpha)
 end
 
 function Win:drawAfterCamera()
@@ -19,12 +19,14 @@ function Win:drawAfterCamera()
 end
 
 function Win:touchreleased(id, x, y, dx, dy, pressure)
-  self:gotoState('Start')
+    self:gotoState('Play')
 end
 
 function Win:keypressed(key, scancode, isrepeat)
   if key == 'space' or key == 'escape' then
-    self:gotoState('Start')
+    print(Inspect(self:getStateStackDebugInfo()))
+    self:gotoState('Play')
+    print(Inspect(self:getStateStackDebugInfo()))
   end
 end
 
