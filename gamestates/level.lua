@@ -6,12 +6,15 @@ local Piece = require 'entities.piece'
 local Box = require 'entities.box'
 local Pane = require 'entities.pane'
 local Follow = require 'entities.follow'
+-- local Ground = require 'entities.ground'
 
 local Level = Game:addState('Level')
 
 function Level:enteredState()
   Log.info('Entered state "Level"')
   self.entities = {}
+
+  if not self.currentLevel then self.currentLevel = 1 end
 
   local count = 0
   Beholder.observe('Docked',function()
@@ -21,7 +24,7 @@ function Level:enteredState()
     count = count -1
     if count == 0 then
       self.currentLevel = self.currentLevel + 1
-      self:gotoState('Start')
+      self:pushState('Win')
     end
   end)
 
@@ -58,13 +61,17 @@ function Level:enteredState()
     x = x + #p.matrix[1] * conf.squareSize + 2
   end
 
-  Pane:new(self.world,0,0,x,maxh * conf.squareSize)
+  -- Make pane "globally" available through the game instance
+  self.pane = Pane:new(self.world,0,0,x,maxh * conf.squareSize)
 
   -- self.follow = Follow:new(self.world,100,100)
   -- local x,y = box:getCenter()
   -- self.follow:pan(x,y,1)
 
-  self:pushState('Debug')
+  -- self:pushState('Debug')
+
+  -- Ground:new(self.world,0,0,conf.width,conf.height,{zOrder = -2})
+
 end
 
 function Level:exitedState()
@@ -174,7 +181,7 @@ function Level:keypressed(key, scancode, isrepeat)
   elseif key == 'p' then
     self:pushState('Paused')
   elseif key == 'd' then
-    self:pushState('debug')
+    self:pushState('Debug')
   elseif key == 's' then
   end
 end
