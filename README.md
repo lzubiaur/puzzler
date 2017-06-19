@@ -31,10 +31,18 @@ main.lua
 
 ## Game states
 
+- Start
+- Play
+  |- Level
+     |- Debug
+     |- Paused
+     |- Win
+
+
 * Start
 * Play
 * Paused
 * GameplayIn/GameplayOut
 * Loading
 * Win
-* PlayDebug
+* Debug
