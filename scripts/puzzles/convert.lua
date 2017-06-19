@@ -4,6 +4,7 @@ local Binser = require 'libs.binser'
 local path = 'puzzles.ser'
 
 local function convert(filename)
+  print(filename)
   local file = assert(io.open(filename,'r'))
   local i,solution,box = 0,{},{}
   for line in file:lines() do
@@ -32,6 +33,8 @@ local function convert(filename)
   end
   print(Inspect(box))
   print('---')
+  print(Inspect(solution))
+  print('---')
   return { box = box, solution = solution }
 end
 
@@ -39,7 +42,9 @@ end
 Binser.writeFile(path,
 convert('puzzles/raw/01.txt'),
 convert('puzzles/raw/02.txt'),
-convert('puzzles/raw/03.txt'))
+convert('puzzles/raw/03.txt'),
+convert('puzzles/raw/04.txt'),
+convert('puzzles/raw/05.txt'))
 
 local results,len = Binser.readFile(path)
 for i=1,len do
