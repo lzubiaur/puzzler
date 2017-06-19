@@ -83,7 +83,6 @@ require 'gamestates.transitions'
 require 'gamestates.win'
 if conf.build == 'debug' then
   require 'gamestates.debug'
-  require 'gamestates.poc.pieces'
 end
 require 'entities.docked'
 require 'entities.commited'
