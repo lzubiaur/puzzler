@@ -26,7 +26,7 @@ function PiecesDebug:enteredState()
   local puzzle = results[currentLevel]
 
   local x,y = self.grid:convertCoords('cell','world',1,5)
-  Box:new(self.world,x,y,puzzle.box)
+  local box = Box:new(self.world,x,y,puzzle.box)
 
   -- Transpose the pieces to the origin
   local maxh = 0
@@ -87,15 +87,6 @@ function PiecesDebug:released(x, y)
   self.entities = {}
 end
 
--- function PiecesDebug:mousefocus(focus)
---   if not focus then
---     for _,v in ipairs(self.entities) do
---       Beholder.trigger('Cancelled',v.entity)
---     end
---     self.entities = {}
---   end
--- end
-
 function PiecesDebug:touchpressed(id, x, y, dx, dy, pressure)
   self:pressed(x,y)
 end
@@ -106,6 +97,30 @@ end
 
 function PiecesDebug:touchreleased(id, x, y, dx, dy, pressure)
   self:released(x,y,dx,dy)
+end
+
+function PiecesDebug:mousepressed(x, y, button, istouch)
+  if istouch then return end
+  self:pressed(x,y)
+end
+
+function PiecesDebug:mousemoved(x, y, dx, dy, istouch)
+  if istouch then return end
+  self:moved(x,y,dx,dy)
+end
+
+function PiecesDebug:mousereleased(x, y, button, istouch)
+  if istouch then return end
+  self:released(x,y,dx,dy)
+end
+
+function PiecesDebug:mousefocus(focus)
+  if not focus then
+    for _,v in ipairs(self.entities) do
+      Beholder.trigger('Cancelled',v.entity)
+    end
+    self.entities = {}
+  end
 end
 
 function PiecesDebug:keypressed(key, scancode, isrepeat)

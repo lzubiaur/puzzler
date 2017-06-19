@@ -96,12 +96,6 @@ function Piece:createSquares()
   end
 end
 
-function Piece:move(x,y)
-end
-
-function Piece:drop(x,y)
-end
-
 function Piece:filter(other)
   return other.class.name == 'Cell' and 'cross' or nil
 end
