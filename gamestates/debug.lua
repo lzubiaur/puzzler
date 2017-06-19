@@ -20,6 +20,7 @@ function Debug:updateGridInfo()
   local mx,my = 0,0
   if love.mouse then
     mx,my = Push:toGame(love.mouse.getPosition())
+    mx,my = mx and mx or 0, my and my or 0
   elseif love.touch then
     local touches = love.touch.getTouches()
     if #touches > 0 then
