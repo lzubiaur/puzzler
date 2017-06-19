@@ -12,8 +12,13 @@ function Debug.d(id,format,...)
 end
 
 function Debug:enteredState()
+  Log.info('Entered state "debug"')
   self.font = g.newFont('resources/fonts/roboto-condensed.fnt','resources/fonts/roboto-condensed.png')
   self.fontHeight = self.font:getHeight()
+end
+
+function Debug:exitedState()
+  Log.info('Exited state "Debug"')
 end
 
 function Debug:updateGridInfo()
