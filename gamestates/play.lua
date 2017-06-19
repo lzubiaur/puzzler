@@ -7,7 +7,7 @@ local Entity = require 'entities.entity'
 local Play = Game:addState('Play')
 
 function Play:enteredState()
-  Log.info('Entered state "Play"')
+  Log.info('Entered state Play')
 
   -- Must clear the timer on entering the scene or old timer will still running
   Timer.clear()
@@ -41,8 +41,10 @@ function Play:enteredState()
   -- the actual screen resolution
   self.camera:setWindow(0,0,conf.width,conf.height)
 
-  local px, py = self.player:getCenter()
-  self.camera:setPosition(x + conf.camOffsetX, y)
+  if self.follow then
+    local px, py = self.follow:getCenter()
+    self.camera:setPosition(x + conf.camOffsetX, y)
+  end
 
   -- Create the grid
   self.grid = EditGrid.grid(self.camera,{
@@ -84,6 +86,22 @@ function Play:exitedState()
   -- self.music:stop()
   -- TODO clean beholder observers?
   Timer.clear()
+end
+
+function Play:pausedState()
+  Log.info('Paused state "Play"')
+end
+
+function Play:continuedState()
+  Log.info('Continued state "Play"')
+end
+
+function Play:pushedState()
+  Log.info('Pushed state "Play"')
+end
+
+function Play:poppedState()
+  Log.info('Popped state "Play"')
 end
 
 function Play:loadWorldMap(world, filename)
@@ -169,10 +187,12 @@ function Play:updateCamera(dt)
   -- Move the camera
   -- TODO smooth the camera. X doesnt work smoothly
   -- TODO Check Lume.smooth instead of lerp for X (and y?)
-  local x,y = self.camera:getPosition()
-  local px, py = self.player:getCenter()
-  self.camera:setPosition(px + conf.camOffsetX, Lume.lerp(y,py,0.05))
-  self.parallax:setTranslation(px,py)
+  if self.follow then
+    local x,y = self.camera:getPosition()
+    local px, py = self.follow:getCenter()
+    self.camera:setPosition(px + conf.camOffsetX, Lume.lerp(y,py,0.05))
+    self.parallax:setTranslation(px,py)
+  end
   -- self.parallax:update(dt) -- not required
 end
 
@@ -198,10 +218,8 @@ function Play:keypressed(key, scancode, isrepeat)
     self:gotoState('Start')
   elseif key == 'p' then
     self:pushState('Paused')
-  elseif key == 'x' then
-    self:pushState('PiecesDebug')
   elseif key == 'd' then
-    self:pushState('GridDebbug')
+    self:pushState('Debbug')
   elseif key == 's' then
     -- enable/disable volume...
   end
