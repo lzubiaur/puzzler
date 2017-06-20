@@ -9,10 +9,9 @@ local Play = Game:addState('Play')
 function Play:enteredState()
   Log.info('Entered state Play')
 
-  -- Must clear the timer on entering the scene or old timer will still running
+  -- Must clear the timer on entering the scene or old timer from previous
+  -- state might still be running
   Timer.clear()
-
-  self.isReleased = true -- touch flag to check touch is "repeated"
 
   -- Create the physics world
   self.world = Bump.newWorld(conf.cellSize)
@@ -200,16 +199,6 @@ function Play:update(dt)
   -- self:updateShaders(dt)
   self:updateEntities(dt)
   self:updateCamera(dt)
-end
-
-function Play:touchpressed(id, x, y, dx, dy, pressure)
-end
-
-function Play:touchmoved(id, x, y, dx, dy, pressure)
-end
-
-function Play:touchreleased(id, x, y, dx, dy, pressure)
-  self.isReleased = true
 end
 
 function Play:keypressed(key, scancode, isrepeat)

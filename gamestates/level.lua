@@ -19,7 +19,6 @@ function Level:enteredState()
   local count = 0
   Beholder.group(self,function()
     Beholder.observe('Docked',function()
-      print 'DEBUG'
       count = count + 1
     end)
     Beholder.observe('Commited',function()
