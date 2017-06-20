@@ -77,11 +77,9 @@ function Level:enteredState()
 end
 
 function Level:exitedState()
-  -- Since Level and Play are the same class (aka same self) there is no
-  -- need to call stopObserving twice (already done in Play:exitedState)
-  -- Beholder.stopObserving(self)
-
-  -- Beholder.trigger('Cleanup')
+  -- Just in case Level is popped up but Play is
+  -- not exited (and Beholder.reset is not called)
+  Beholder.stopObserving(self)
 end
 
 function Level:pressed(x, y)

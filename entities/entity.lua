@@ -75,7 +75,7 @@ function Entity:clampVelocity()
 end
 
 function Entity:destroy()
-  -- Log.debug('Destroyed',self.class.name)
+  Beholder.stopObserving(self)
   self.world:remove(self)
 end
 
