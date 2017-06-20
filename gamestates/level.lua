@@ -17,15 +17,18 @@ function Level:enteredState()
   if not self.currentLevel then self.currentLevel = 1 end
 
   local count = 0
-  Beholder.observe('Docked',function()
-    count = count + 1
-  end)
-  Beholder.observe('Commited',function()
-    count = count -1
-    if count == 0 then
-      self.currentLevel = self.currentLevel + 1
-      self:pushState('Win')
-    end
+  Beholder.group(self,function()
+    Beholder.observe('Docked',function()
+      print 'DEBUG'
+      count = count + 1
+    end)
+    Beholder.observe('Commited',function()
+      count = count -1
+      if count == 0 then
+        self.currentLevel = self.currentLevel + 1
+        self:pushState('Win')
+      end
+    end)
   end)
 
   local data,len = assert(love.filesystem.read('resources/puzzles.ser'))
@@ -75,6 +78,10 @@ function Level:enteredState()
 end
 
 function Level:exitedState()
+  -- Since Level and Play are the same class (aka same self) there is no
+  -- need to call stopObserving twice (already done in Play:exitedState)
+  -- Beholder.stopObserving(self)
+
   -- Beholder.trigger('Cleanup')
 end
 
@@ -178,6 +185,9 @@ end
 function Level:keypressed(key, scancode, isrepeat)
   if key == 'escape' then
     self:gotoState('Start')
+  elseif key == 'r' then
+    Beholder.trigger('ResetGame')
+    self:gotoState('Play')
   elseif key == 'p' then
     self:pushState('Paused')
   elseif key == 'd' then

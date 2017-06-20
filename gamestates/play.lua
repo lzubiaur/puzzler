@@ -65,18 +65,19 @@ function Play:enteredState()
   self.parallax:addLayer('layer2',1,{ relativeScale = 0.8 })
   -- self.parallax:setTranslation(px,py)
 
-  Beholder.observe('GameOver',function() self:onGameOver() end)
-  Beholder.observe('ResetGame',function() self:onResetGame() end)
-  Beholder.observe('Win',function()
-    Timer.after(0.5,function()
-      self:pushState('Win')
+  Beholder.group(self,function()
+    Beholder.observe('GameOver',function() self:onGameOver() end)
+    Beholder.observe('ResetGame',function() self:onResetGame() end)
+    Beholder.observe('Win',function()
+      Timer.after(0.5,function()
+        self:pushState('Win')
+      end)
     end)
+    -- Observe all events (for debug purpose)
+    if conf.build == 'debug' then
+      -- Beholder.observe(function(...) Log.debug('Event triggered > ',...) end)
+    end
   end)
-
-  -- Observe all events (for debug purpose)
-  if conf.build == 'debug' then
-    -- Beholder.observe(function(...) Log.debug('Event triggered > ',...) end)
-  end
 
   self:pushState('Level')
 end
@@ -84,7 +85,7 @@ end
 function Play:exitedState()
   Log.info('Exited state Play')
   -- self.music:stop()
-  -- TODO clean beholder observers?
+  Beholder.stopObserving(self)
   Timer.clear()
 end
 
@@ -171,8 +172,6 @@ end
 
 function Play:onResetGame()
   Log.info('Catch event: onResetGame')
-  self.player:goToCheckPoint()
-  self:pushState('GameplayIn')
 end
 
 -- Update visible entities
