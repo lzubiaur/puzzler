@@ -9,7 +9,7 @@ function Commited:enteredState()
   Beholder.trigger('Commited',self)
   -- save commited position
   self.cx,self.cy = self.x,self.y
-  local count,time = false,0,0
+  local count,time = 0,0
   Beholder.group(self,function()
     Beholder.observe('Selected',self,function()
       count = count + 1
