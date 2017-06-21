@@ -6,6 +6,7 @@ local platform = love.system.getOS()
 conf = {
   version = require 'common.version',
   build = require 'common.build', -- release/debug build
+  profiling = false, -- enable/disable code profiling report
   -- The game fixed resolution. Use a 16:9 aspect ratio
   width = 360, height = 640,
   -- Bump world cell size. Should be a multiple of the map's tile size.
@@ -52,6 +53,10 @@ Parallax  = require 'modules.parallax'
 Binser    = require 'modules.binser'
 Matrix    = require 'modules.matrix'
 EditGrid  = require 'modules.editgrid'
+
+if conf.build == 'debug' then
+  ProFi = require 'modules.profi'
+end
 
 -- Love2D shortcuts
 g = love.graphics
@@ -124,6 +129,16 @@ end
 function love.update(dt)
   --  if dt > .02 then dt = .02 end
   game:update(dt)
+end
+
+if conf.build == 'debug' and conf.profiling then
+  local run = love.run
+  function love.run()
+    ProFi:start()
+    run()
+    ProFi:stop()
+    ProFi:writeReport('ProfilingReport.txt')
+  end
 end
 
 -- Must call puse:resize when window resizes.
