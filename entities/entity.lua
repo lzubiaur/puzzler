@@ -115,11 +115,14 @@ function Entity:loadState()
   return game:getCurrentLevelState().entities[self.id]
 end
 
-function Entity:saveState(state)
+function Entity:saveState(name,state)
   if not self.id then
     error('No ID for entity', self.class.name)
   end
-  game:getCurrentLevelState().entities[self.id] = state
+  game:getCurrentLevelState().entities[self.id] = {
+    name = name,
+    state = state
+  }
 end
 
 -- Load and restore this entity state from the Game.State database.
@@ -127,9 +130,13 @@ end
 function Entity:restoreState()
   local state = self:loadState()
   if state then
-    self:gotoState(state.name)
+    if state.name then
+      self:gotoState(state.name)
+    end
+    -- Lume.extend(self,state.state)
+    return state.state
   end
-  return state
+  return nil
 end
 
 function Entity:observeOnce(...)

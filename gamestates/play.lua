@@ -16,26 +16,24 @@ function Play:enteredState()
   -- Create the physics world
   self.world = Bump.newWorld(conf.cellSize)
 
-  -- Load the game map and resources
-  local map = self:loadWorldMap(self.world,string.format('resources/maps/map%02d.lua',self.state.cur))
+  self.parallax = Parallax(conf.width,conf.height, {offsetX = 0, offsetY = 0})
+  self.parallax:addLayer('layer1',1,{ relativeScale = 0.4 })
+  self.parallax:addLayer('layer2',1,{ relativeScale = 0.8 })
+  -- self.parallax:setTranslation(px,py)
 
-  -- Get player's position from the map
-  local x = map.properties.px and map.properties.px or 0
-  local y = map.properties.py and map.properties.py or 0
-  x,y = map:convertTileToPixel(x,y)
+  -- Push custom level
+  self:pushState('Level')
 
-  -- Create the player entity
-  self.player = Player:new(self.world, x,y)
+  -- Load the game map
+  -- Log.debug('Map size in px:',self.worldWidth, self.worldHeight)
+  -- self:createCamera()
+  -- self:createHandlers()
+end
 
-  -- Get world map size
-  self.worldWidth = map.tilewidth * map.width
-  self.worldHeight = map.tileheight * map.height
-  Log.debug('Map size in px:',self.worldWidth, self.worldHeight)
-
+function Play:createCamera(w,h)
   -- Create the follow camera. Size of the camera is the size of the map + offset.
-  self.camera = Gamera.new(
-    -conf.camMarginX, -conf.camMarginY,
-    self.worldWidth + conf.camMarginX, self.worldHeight + conf.camMarginY)
+  self.camera = Gamera.new(-conf.camMarginX,-conf.camMarginY,
+    w+conf.camMarginX,h+conf.camMarginY)
   -- Camera window must be set to the game resolution and not the
   -- the actual screen resolution
   self.camera:setWindow(0,0,conf.width,conf.height)
@@ -58,12 +56,9 @@ function Play:enteredState()
     hideOrigin = false,
     -- interval = 200
   })
+end
 
-  self.parallax = Parallax(conf.width,conf.height, {offsetX = 0, offsetY = 0})
-  self.parallax:addLayer('layer1',1,{ relativeScale = 0.4 })
-  self.parallax:addLayer('layer2',1,{ relativeScale = 0.8 })
-  -- self.parallax:setTranslation(px,py)
-
+function Play:createHandlers()
   Beholder.group(self,function()
     Beholder.observe('GameOver',function() self:onGameOver() end)
     Beholder.observe('ResetGame',function() self:onResetGame() end)
@@ -77,8 +72,6 @@ function Play:enteredState()
       -- Beholder.observe(function(...) Log.debug('Event triggered > ',...) end)
     end
   end)
-
-  self:pushState('Level')
 end
 
 function Play:exitedState()
@@ -108,8 +101,10 @@ function Play:poppedState()
   Log.info('Popped state "Play"')
 end
 
-function Play:loadWorldMap(world, filename)
-  Log.info('Loading world ', filename)
+-- Must return the world size (w,h)
+function Play:loadWorld()
+  local filename = string.format('resources/maps/map%02d.lua',self.state.csi)
+  Log.info('Loading map',filename)
 
   -- Load a map exported to Lua from Tiled.
   -- STI provides a bump plugin but since we don't use tiles we'll use a
@@ -117,8 +112,18 @@ function Play:loadWorldMap(world, filename)
   local map = STI(filename)
 
   -- Add your custom loading tasks or use the Bump plugin
+  -- ...
 
-  return map
+  -- Get player's position from the map
+  local x = map.properties.px and map.properties.px or 0
+  local y = map.properties.py and map.properties.py or 0
+  x,y = map:convertTileToPixel(x,y)
+
+  -- Create the player entity
+  self.player = Player:new(self.world, x,y)
+
+  -- Get world map size
+  return map.tilewidth * map.width, map.tileheight * map.height
 end
 
 function Play:drawParallax()
@@ -142,11 +147,9 @@ end
 
 function Play:drawAfterCamera()
   g.setColor(255,255,255,255)
-  g.print({
-    {to_rgb(palette.text)}, 'Esc: quit\n',
-    {to_rgb(palette.text)}, 'd: switch debug mode\n',
-    {to_rgb(palette.text)}, 'p: pause\n',
-  }, conf.width*.5,conf.height*.5)
+  g.print([[Esc: quit
+d: switch debug mode
+p: pause]])
 end
 
 function Play:draw()
@@ -159,7 +162,6 @@ function Play:draw()
   self:drawBeforeCamera()
 
   self.camera:draw(function(l,t,w,h)
-    g.rectangle('line',0,0,self.worldWidth,self.worldHeight)
     self:drawEntities(l,t,w,h) -- Call a function so it can be override by other state
   end)
 

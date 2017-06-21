@@ -24,9 +24,7 @@ end
 
 function Win:keypressed(key, scancode, isrepeat)
   if key == 'space' or key == 'escape' then
-    print(Inspect(self:getStateStackDebugInfo()))
     self:gotoState('Play')
-    print(Inspect(self:getStateStackDebugInfo()))
   end
 end
 

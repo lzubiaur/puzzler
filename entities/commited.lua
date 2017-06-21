@@ -12,6 +12,7 @@ function Commited:enteredState()
   local count,time = 0,0
   Beholder.group(self,function()
     Beholder.observe('Selected',self,function()
+      -- double click to remove the piece to the dock pane
       count = count + 1
       if count == 1 then
         time = love.timer.getTime()
@@ -35,6 +36,11 @@ function Commited:enteredState()
 
     Beholder.observe('Cancelled',self,function()
       self:drop(x,y)
+    end)
+
+    Beholder.observe('SaveState',function()
+      self:drop(self.x,self.y)
+      self:saveState('Commited',{x=self.x,y=self.y})
     end)
   end)
 end

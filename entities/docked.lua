@@ -42,12 +42,6 @@ function Docked:exitedState()
   Beholder.stopObserving(self)
 end
 
--- TODO
--- function Docked:destroy()
---   Beholder.stopObserving(self)
---   Entity.destroy(self)
--- end
-
 function Docked:drop(x,y)
   if self:queryFreeTakenCells() < self:getOrder() then
     -- rollback to dock position

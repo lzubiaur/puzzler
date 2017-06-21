@@ -6,6 +6,7 @@ local Piece = require 'entities.piece'
 local Box = require 'entities.box'
 local Pane = require 'entities.pane'
 local Follow = require 'entities.follow'
+local HUD = require 'common.hud'
 -- local Ground = require 'entities.ground'
 
 local Level = Game:addState('Level')
@@ -14,27 +15,19 @@ function Level:enteredState()
   Log.info('Entered state "Level"')
   self.entities = {}
 
-  if not self.currentLevel then self.currentLevel = 1 end
+  local levelId = self.state.cli
 
-  local count = 0
-  Beholder.group(self,function()
-    Beholder.observe('Docked',function()
-      count = count + 1
-    end)
-    Beholder.observe('Commited',function()
-      count = count -1
-      if count == 0 then
-        self.currentLevel = self.currentLevel + 1
-        self:pushState('Win')
-      end
-    end)
-  end)
+  self.hud = HUD:new()
+  self.hud.currentLevel = self.state.cli
 
-  local data,len = assert(love.filesystem.read('resources/puzzles.ser'))
-  local results,len = assert(Binser.deserialize(data))
-  local puzzle = results[self.currentLevel]
 
-  local x,y = self.grid:convertCoords('cell','world',1,5)
+  local puzzles,len = self:loadWorld()
+  assert(self.state.cli <= len,'Current level id'..self.state.cli..' > number of puzzles '..len)
+  local puzzle = puzzles[self.state.cli]
+
+  self:createCamera(conf.width * len, conf.height)
+
+  local x,y = self.grid:convertCoords('cell','world',0,5)
   local box = Box:new(self.world,x,y,puzzle.box)
   self.camera:setPosition(box:getCenter())
 
@@ -54,14 +47,34 @@ function Level:enteredState()
   end
   maxh = maxh + 1
 
+  local count = #puzzle.solution
+  self.hud.count,self.hud.total = count,count
+  Beholder.group(self,function()
+    Beholder.observe('Commited',function()
+      count = count -1
+      self.hud.count = count
+      if count == 0 then
+        self.state.cli = self.state.cli + 1
+        self:pushState('Win')
+      end
+    end)
+  end)
+
   local color = Hue.new('#ff0000')
-  local x = 0
-  for k,v in pairs(puzzle.solution) do
-    local p = Piece:new(self.world,v,{to_rgb(color)},x,0)
-    p:gotoState('Docked')
+  local x,p = 0
+  for i=1,count do
+    p = Piece:new(self.world,i,puzzle.solution[i],{to_rgb(color)},x,0)
     color = color:hue_offset(20)
-    x = x + #p.matrix[1] * conf.squareSize + 2
+    -- XXX
+    x = x + #p.matrix[1] * conf.squareSize + 1
   end
+
+  Beholder.group(self,function()
+    Beholder.observe('Docked',function()
+      count = count + 1
+      self.hud.count = count
+    end)
+  end)
 
   -- Make pane "globally" available through the game instance
   self.pane = Pane:new(self.world,0,0,x,maxh * conf.squareSize)
@@ -80,6 +93,13 @@ function Level:exitedState()
   -- Just in case Level is popped up but Play is
   -- not exited (and Beholder.reset is not called)
   Beholder.stopObserving(self)
+end
+
+function Level:loadWorld()
+  local filename = string.format('resources/maps/map%02d.lua',self.state.csi)
+
+  local data,len = assert(love.filesystem.read('resources/puzzles.ser'))
+  return assert(Binser.deserialize(data))
 end
 
 function Level:pressed(x, y)
@@ -147,16 +167,8 @@ function Level:mousefocus(focus)
   end
 end
 
-function Level:keypressed(key, scancode, isrepeat)
-  if key == 'escape' then
-    self:popState()
-  elseif key == 'd' then
-    self:pushState('Debug')
-  elseif key == 'r' then
-    Beholder.trigger('Right')
-  elseif key == 'right' then
-    self.player.x = self.player.x + 10
-  end
+function Level:savePuzzleState()
+  Beholder.trigger('SaveState')
 end
 
 function Level:exitedState()
@@ -179,8 +191,13 @@ function Level:poppedState()
   Log.info('Popped state "Level"')
 end
 
+function Level:drawAfterCamera()
+  self.hud:draw()
+end
+
 function Level:keypressed(key, scancode, isrepeat)
   if key == 'escape' then
+    Beholder.trigger('SaveState')
     self:gotoState('Start')
   elseif key == 'r' then
     Beholder.trigger('ResetGame')

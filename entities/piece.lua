@@ -59,7 +59,7 @@ local function to_matrix(t)
   return m,w,h
 end
 
-function Piece:initialize(world,t,color,x,y)
+function Piece:initialize(world,id,t,color,x,y)
   -- ox,oy are the origin piece position
   self.color,self.ox,self.oy = color,x,y
   if type(t) == 'string' then
@@ -67,10 +67,22 @@ function Piece:initialize(world,t,color,x,y)
     assert(t,'Unknow piece')
     self.name = t
   end
-  local w,h
-  self.matrix,w,h = to_matrix(t)
-  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize)
+  self.matrix = to_matrix(t)
+  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize,{id=id})
+  id = id + 1
   self:createSquares()
+
+  if not self:restoreState() then
+    self:gotoState('Docked')
+  end
+end
+
+function Piece:restoreState()
+  local state = Entity.restoreState(self)
+  if state then
+    self:moveSquares(state.x,state.y)
+  end
+  return state
 end
 
 function Piece:createSquares()

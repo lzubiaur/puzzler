@@ -7,7 +7,8 @@ function Game:initialize()
 
   self.state = {
     path = 'db.data', -- this database filename
-    cur = 1, -- current level
+    cli = 1, -- current level id
+    csi = 1, -- current season id
     levels = {} -- Array with all levels states.
   }
 
@@ -130,7 +131,7 @@ end
 
 -- Lazy create and returns the current level state
 function Game:getCurrentLevelState()
-  local state,i = self.state,self.state.cur
+  local state,i = self.state,self.state.cli
   if not state.levels[i] then
     state.levels[i] = {
       score = 0,
