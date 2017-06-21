@@ -12,7 +12,7 @@ function Box:initialize(world,x,y,t)
     local rowWidth = #t[i]
     for j=1,rowWidth do
       if t[i][j] ~= '_' then
-        Cell:new(world,x+(j-1)*conf.squareSize,y+(i-1)*conf.squareSize,{zOrder=-1})
+        Cell:new(world,x+(j-1)*conf.squareSize,y+(i-1)*conf.squareSize,{zOrder=-3})
       end
     end
     w = math.max(w,rowWidth)
@@ -22,8 +22,8 @@ end
 
 function Box:draw()
   -- Debug draw
-  g.setColor(0,255,0,255)
-  g.rectangle('line',self.x,self.y,self.w,self.h)
+  -- g.setColor(0,255,0,255)
+  -- g.rectangle('line',self.x,self.y,self.w,self.h)
 end
 
 return Box

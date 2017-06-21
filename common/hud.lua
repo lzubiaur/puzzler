@@ -7,7 +7,8 @@ function HUD:initialize()
 end
 
 function HUD:draw()
-  g.print(Lume.format('Level: {currentLevel} Pieces:{count}/{total}',self))
+  g.setColor(to_rgb(palette.text))
+  g.printf('Level '..self.currentLevel,0,0,conf.width,'center')
 end
 
 function HUD:update(dt)

@@ -3,12 +3,13 @@
 function createPalette(c)
   local t1,t2 = c:triadic()
   return {
-    bg   = t2,
-    base = c,
-    main = c:desaturate_by(.7),
+    base = Hue.new('#002b36'),
+    fg   = Hue.new('#cd4e11'),
+    bg   = Hue.new('#efe8d4'),
+    main = Hue.new('#D8D2B0'),
     line = c:desaturate_by(.5),
     fill = c:desaturate_by(.2),
-    text = Hue.new('#ffffff'),
+    text = Hue.new('#839496'),
   }
 end
 
@@ -19,6 +20,7 @@ function offsetHuePalette(o)
 end
 
 palette = createPalette(Hue.new('#333333'))
+-- offsetHuePalette(60)
 
 -- TODO doesnt work
 function to_rgb(c,alpha)

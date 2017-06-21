@@ -7,12 +7,12 @@ local Cell = Class('Cell',Entity)
 
 function Cell:initialize(world,x,y,opt)
   Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize,opt)
-  self.color = { 30,30,30,255 }
 end
 
 function Cell:draw()
-  g.setColor(unpack(self.color))
-  Entity.draw(self)
+  g.setColor(to_rgb(palette.base))
+  g.rectangle('fill',self.x,self.y,self.w,self.h)
+  -- Entity.draw(self)
 end
 
 return Cell

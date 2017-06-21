@@ -60,11 +60,15 @@ function Level:enteredState()
     end)
   end)
 
-  local color = Hue.new('#ff0000')
+  -- offsetHuePalette(20)
+
+  local paneY = conf.height - (maxh + 2) * conf.squareSize
+  local color = palette.fg
   local x,p = 0
   for i=1,count do
-    p = Piece:new(self.world,i,puzzle.solution[i],{to_rgb(color)},x,0)
-    color = color:hue_offset(20)
+    p = Piece:new(self.world,i,puzzle.solution[i],x,paneY,{color={to_rgb(color)}})
+    color = color:hue_offset(30)
+    -- color = color:lighten_by(1.10)
     -- XXX
     x = x + #p.matrix[1] * conf.squareSize + 1
   end
@@ -77,7 +81,7 @@ function Level:enteredState()
   end)
 
   -- Make pane "globally" available through the game instance
-  self.pane = Pane:new(self.world,0,0,x,maxh * conf.squareSize)
+  self.pane = Pane:new(self.world,0,paneY,x,maxh*conf.squareSize)
 
   -- self.follow = Follow:new(self.world,100,100)
   -- local x,y = box:getCenter()

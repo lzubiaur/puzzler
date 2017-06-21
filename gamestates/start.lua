@@ -26,10 +26,8 @@ end
 function Start:draw()
   Push:start()
     g.clear(to_rgb(palette.bg))
-    g.print({
-      {to_rgb(palette.text)}, 'Esc: quit\n',
-      {to_rgb(palette.text)}, 'Space: play',
-    }, conf.width*.5,conf.height*.5)
+    g.print([[Esc: quit
+Space: play]])
   Push:finish()
 end
 

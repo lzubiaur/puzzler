@@ -59,9 +59,9 @@ local function to_matrix(t)
   return m,w,h
 end
 
-function Piece:initialize(world,id,t,color,x,y)
+function Piece:initialize(world,id,t,x,y,opt)
   -- ox,oy are the origin piece position
-  self.color,self.ox,self.oy = color,x,y
+  self.color,self.ox,self.oy = opt.color,x,y
   if type(t) == 'string' then
     t = pieces[t]
     assert(t,'Unknow piece')
@@ -162,6 +162,12 @@ function Piece:getOrder()
   return #self.squares
 end
 
+function Piece:setZOrder(zOrder)
+  for i=1,#self.squares do
+    self.squares[i].zOrder = zOrder
+  end
+end
+
 -- Rotate Right
 function Piece:rotr()
   self.matrix = Matrix.rotr(self.matrix)
@@ -175,8 +181,8 @@ function Piece:mirror()
 end
 
 function Piece:draw()
-  g.setColor(0,255,255,255)
-  g.rectangle('line',self.x,self.y,self.w,self.h)
+  -- g.setColor(0,255,255,255)
+  -- g.rectangle('line',self.x,self.y,self.w,self.h)
 end
 
 -- function Piece:update()

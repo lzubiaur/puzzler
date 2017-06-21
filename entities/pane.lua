@@ -6,7 +6,7 @@ local Entity = require 'entities.entity'
 local Pane = Class('Pane',Entity)
 
 function Pane:initialize(world,x,y,w,h)
-  Entity.initialize(self,world,x,y,w,h)
+  Entity.initialize(self,world,x,y,w,h,{zOrder=-1})
 
   local pieces,len = {},0
   Beholder.observe('Selected',self,function(x,y)
@@ -43,8 +43,8 @@ function Pane:initialize(world,x,y,w,h)
 end
 
 function Pane:draw()
-  g.setColor(0,255,0,255)
-  g.rectangle('line',self.x,self.y,self.w,self.h)
+  -- g.setColor(0,255,0,255)
+  -- g.rectangle('line',self.x,self.y,self.w,self.h)
 end
 
 return Pane

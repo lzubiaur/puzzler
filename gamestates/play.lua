@@ -154,8 +154,7 @@ end
 
 function Play:draw()
   Push:start()
-  -- g.clear(to_rgb(palette.bg))
-  g.clear(0,0,0,255)
+  g.clear(to_rgb(palette.bg))
 
   -- self:drawParallax()
 

@@ -5,7 +5,6 @@ local Square = Class('Square',Entity)
 
 function Square:initialize(world,x,y,opt)
   Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize,opt)
-  self.color = {0,0,255,255}
 end
 
 function Square:draw()

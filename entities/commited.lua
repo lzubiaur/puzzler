@@ -12,6 +12,7 @@ function Commited:enteredState()
   local count,time = 0,0
   Beholder.group(self,function()
     Beholder.observe('Selected',self,function()
+      self:setZOrder(1)
       -- double click to remove the piece to the dock pane
       count = count + 1
       if count == 1 then
@@ -31,10 +32,12 @@ function Commited:enteredState()
     end)
 
     Beholder.observe('Released',self,function(x,y)
+      self:setZOrder(0)
       self:drop(x,y)
     end)
 
     Beholder.observe('Cancelled',self,function()
+      self:setZOrder(0)
       self:drop(x,y)
     end)
 

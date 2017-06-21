@@ -11,10 +11,14 @@ function Docked:enteredState()
   Beholder.group(self,function()
     local first,moving = true,nil
 
+    Beholder.observe('Selected',self,function()
+      self:setZOrder(1)
+    end)
+
     Beholder.observe('Moved',self,function(x,y,dx,dy)
       if first then
         -- XXX use a relative max dy
-        moving = dy > 0
+        moving = dy < 0
         first = false
       end
       if moving then
@@ -23,6 +27,7 @@ function Docked:enteredState()
     end)
 
     Beholder.observe('Released',self,function(x,y)
+      self:setZOrder(0)
       if moving then
         self:drop(x,y)
       end
@@ -30,6 +35,7 @@ function Docked:enteredState()
     end)
 
     Beholder.observe('Cancelled',self,function()
+      self:setZOrder(0)
       if moving then
         self:drop(x,y)
       end
