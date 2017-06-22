@@ -3,7 +3,7 @@
 function createPalette(c)
   local t1,t2 = c:triadic()
   return {
-    base = Hue.new('#002b36'),
+    base = Hue.new('#043642'),
     fg   = Hue.new('#cd4e11'),
     bg   = Hue.new('#efe8d4'),
     main = Hue.new('#D8D2B0'),

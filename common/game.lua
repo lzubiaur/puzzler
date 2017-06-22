@@ -5,6 +5,8 @@ local Game = Class('Game'):include(Stateful)
 function Game:initialize()
   Log.info('Create the game instance.')
 
+  self.entities = {}
+
   self.state = {
     path = 'db.data', -- this database filename
     cli = 1, -- current level id
@@ -87,25 +89,105 @@ function Game:keypressed(key, scancode, isRepeat)
   -- nothing to do
 end
 
+function Game:touchFilter(item)
+    return true
+end
+
+-- 'Pressed' event
+-- event args: entity,world x,y
+function Game:pressed(x, y)
+  x,y = self:screenToWorld(x,y)
+  local items, len = self.world:queryPoint(x,y,function(item) return self:touchFilter(item) end)
+  for i=1,len do
+    local ent = items[i]
+    Beholder.trigger('Pressed',ent,x,y)
+    table.insert(self.entities,ent)
+  end
+end
+
+-- 'Moved' event
+-- event args: entity,world x,y, delta x,y
+function Game:moved(x, y, dx, dy)
+  dx,dy = self:screenToWorld(x-dx,y-dy)
+  x,y = self:screenToWorld(x,y)
+  for i=1,#self.entities do
+    Beholder.trigger('Moved',self.entities[i],x,y,x-dx,y-dy)
+  end
+end
+
+-- 'Released' event
+-- event args: entity,world x,y
+function Game:released(x, y)
+  x,y = self:screenToWorld(x,y)
+  for i=1,#self.entities do
+    Beholder.trigger('Released',self.entities[i],x,y)
+  end
+  self.entities = {}
+end
+
 function Game:touchpressed(id, x, y, dx, dy, pressure)
+  self:pressed(x,y)
 end
 
 function Game:touchmoved(id, x, y, dx, dy, pressure)
+  self:moved(x,y,dx,dy)
 end
 
 function Game:touchreleased(id, x, y, dx, dy, pressure)
+  self:released(x,y,dx,dy)
 end
 
 function Game:mousepressed(x, y, button, istouch)
-end
-
-function Game:mousereleased(x, y, button, istouch)
+  if istouch then return end
+  self:pressed(x,y)
 end
 
 function Game:mousemoved(x, y, dx, dy, istouch)
+  if istouch then return end
+  self:moved(x,y,dx,dy)
+end
+
+function Game:mousereleased(x, y, button, istouch)
+  if istouch then return end
+  self:released(x,y,dx,dy)
 end
 
 function Game:mousefocus(focus)
+  if not focus then
+    for _,v in ipairs(self.entities) do
+      Beholder.trigger('Cancelled',v.entity)
+    end
+    self.entities = {}
+  end
+end
+
+function Game:createCamera(w,h,mx,my,ox,oy,gs)
+  mx,my = mx or 0,my or 0
+  ox,oy = ox or 0,oy or 0
+  -- Create the follow camera. Size of the camera is the size of the map + offset.
+  self.camera = Gamera.new(-mx,-my,w+mx,h+my)
+  -- Camera window must be set to the game resolution and not the
+  -- the actual screen resolution
+  self.camera:setWindow(0,0,conf.width,conf.height)
+
+  if self.follow then
+    local px, py = self.follow:getCenter()
+    self.camera:setPosition(x+ox,y+oy)
+  end
+
+  -- Create the grid
+  self.grid = EditGrid.grid(self.camera,{
+    size = gs or 32,
+    subdivisions = 10,
+    color = {128, 140, 250},
+    drawScale = false,
+    xColor = {255, 255, 0},
+    yColor = {0, 255, 255},
+    fadeFactor = 0.3,
+    textFadeFactor = 0.5,
+    hideOrigin = false,
+    -- interval = 200
+  })
 end
 
 -- Convert from design/game coords to world (aka camera) coords

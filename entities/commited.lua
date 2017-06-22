@@ -6,12 +6,20 @@ local Piece = require 'entities.piece'
 local Commited = Piece:addState('Commited')
 
 function Commited:enteredState()
+  Log.debug('Entered state commited')
   Beholder.trigger('Commited',self)
   -- save commited position
   self.cx,self.cy = self.x,self.y
-  local count,time = 0,0
+  for i=1,#self.squares do
+    self:createEventHandlers(self.squares[i])
+  end
+end
+
+function Commited:createEventHandlers(target)
   Beholder.group(self,function()
-    Beholder.observe('Selected',self,function()
+    local count,time,ax,ay = 0,0
+    Beholder.observe('Pressed',target,function(x,y)
+      ax,ay = self:getLocalPoint(x,y)
       self:setZOrder(1)
       -- double click to remove the piece to the dock pane
       count = count + 1
@@ -25,22 +33,18 @@ function Commited:enteredState()
         count = 0
       end
     end)
-
-    Beholder.observe('Moved',self,function(x,y)
-      self:moveSquares(x,y)
+    Beholder.observe('Moved',target,function(x,y)
+      self:moveSquares(x-ax,y-ay)
       count = 0
     end)
-
-    Beholder.observe('Released',self,function(x,y)
+    Beholder.observe('Released',target,function(x,y)
       self:setZOrder(0)
-      self:drop(x,y)
+      self:drop(x-ax,y-ay)
     end)
-
-    Beholder.observe('Cancelled',self,function()
+    Beholder.observe('Cancelled',target,function()
       self:setZOrder(0)
-      self:drop(x,y)
+      self:drop(x-ax,y-ay)
     end)
-
     Beholder.observe('SaveState',function()
       self:drop(self.x,self.y)
       self:saveState('Commited',{x=self.x,y=self.y})
@@ -50,6 +54,7 @@ end
 
 function Commited:exitedState()
   Beholder.stopObserving(self)
+  Log.debug('Exited state commited')
 end
 
 -- TODO destroy

@@ -30,34 +30,6 @@ function Play:enteredState()
   -- self:createHandlers()
 end
 
-function Play:createCamera(w,h)
-  -- Create the follow camera. Size of the camera is the size of the map + offset.
-  self.camera = Gamera.new(-conf.camMarginX,-conf.camMarginY,
-    w+conf.camMarginX,h+conf.camMarginY)
-  -- Camera window must be set to the game resolution and not the
-  -- the actual screen resolution
-  self.camera:setWindow(0,0,conf.width,conf.height)
-
-  if self.follow then
-    local px, py = self.follow:getCenter()
-    self.camera:setPosition(x + conf.camOffsetX, y)
-  end
-
-  -- Create the grid
-  self.grid = EditGrid.grid(self.camera,{
-    size = conf.squareSize,
-    subdivisions = 10,
-    color = {128, 140, 250},
-    drawScale = false,
-    xColor = {255, 255, 0},
-    yColor = {0, 255, 255},
-    fadeFactor = 0.3,
-    textFadeFactor = 0.5,
-    hideOrigin = false,
-    -- interval = 200
-  })
-end
-
 function Play:createHandlers()
   Beholder.group(self,function()
     Beholder.observe('GameOver',function() self:onGameOver() end)

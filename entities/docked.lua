@@ -6,38 +6,42 @@ local Piece = require 'entities.piece'
 local Docked = Piece:addState('Docked')
 
 function Docked:enteredState()
+  Log.debug('Entered state docked')
   Beholder.trigger('Docked',self)
+  for i=1,#self.squares do
+    self:createEventHandlers(self.squares[i])
+  end
+end
 
+function Docked:createEventHandlers(target)
   Beholder.group(self,function()
     local first,moving = true,nil
-
-    Beholder.observe('Selected',self,function()
+    local ax,ay
+    Beholder.observe('Pressed',target,function(x,y)
+      ax,ay = self:getLocalPoint(x,y)
       self:setZOrder(1)
     end)
-
-    Beholder.observe('Moved',self,function(x,y,dx,dy)
+    Beholder.observe('Moved',target,function(x,y,dx,dy)
       if first then
         -- XXX use a relative max dy
         moving = dy < 0
         first = false
       end
       if moving then
-        self:moveSquares(x,y)
+        self:moveSquares(x-ax,y-ay)
       end
     end)
-
-    Beholder.observe('Released',self,function(x,y)
+    Beholder.observe('Released',target,function(x,y,dx,dy)
       self:setZOrder(0)
       if moving then
-        self:drop(x,y)
+        self:drop(x-ax,y-ay)
       end
       first = true
     end)
-
-    Beholder.observe('Cancelled',self,function()
+    Beholder.observe('Cancelled',target,function()
       self:setZOrder(0)
       if moving then
-        self:drop(x,y)
+        self:drop(x-ax,y-ay)
       end
       first = true
     end)
@@ -46,6 +50,7 @@ end
 
 function Docked:exitedState()
   Beholder.stopObserving(self)
+  Log.debug('Exited state docked')
 end
 
 function Docked:drop(x,y)

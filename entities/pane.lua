@@ -9,7 +9,7 @@ function Pane:initialize(world,x,y,w,h)
   Entity.initialize(self,world,x,y,w,h,{zOrder=-1})
 
   local pieces,len = {},0
-  Beholder.observe('Selected',self,function(x,y)
+  Beholder.observe('Pressed',self,function(x,y)
     pieces,len = self.world:queryRect(self.x,self.y,self.w,self.h,function(item)
       return item.class.name == 'Piece'
     end)

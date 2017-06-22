@@ -1,7 +1,11 @@
 -- entity.lua
 
+-- TODO create a subclass 'PhysicEntity'
+
 -- Physic world entity
 local Entity = Class('Entity')
+
+local DELTA = 1e-10 -- floating-point margin of error
 
 function Entity:initialize(world, x,y, w,h, opt)
   opt = opt or {}
@@ -31,6 +35,11 @@ end
 
 function Entity:getCenter()
   return self.x + self.w / 2, self.y + self.h / 2
+end
+
+function Entity:containsPoint(x,y)
+  return x - self.x > DELTA and y - self.y > DELTA and
+         self.x + self.w - x > DELTA and self.y + self.h - y > DELTA
 end
 
 function Entity:resize(w,h)

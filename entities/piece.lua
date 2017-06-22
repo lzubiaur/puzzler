@@ -100,7 +100,6 @@ function Piece:createSquares()
       if m[i][j] == 1 then
         local sx,sy = self.x+(j-1)*conf.squareSize,self.y+(i-1)*conf.squareSize
         local square = Square:new(self.world,sx,sy)
-        square.piece = self
         square.color = self.color
         table.insert(self.squares,square)
       end
