@@ -134,6 +134,15 @@ function Entity:saveState(name,state)
   }
 end
 
+function Entity:removeState()
+  if not self.id then
+    error('No ID for entity',self.class.name)
+  end
+  if game:getCurrentLevelState().entities[self.id] then
+    game:getCurrentLevelState().entities[self.id] = nil
+  end
+end
+
 -- Load and restore this entity state from the Game.State database.
 -- The entity must have an ID or an error is raised.
 function Entity:restoreState()

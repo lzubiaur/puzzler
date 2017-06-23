@@ -27,7 +27,9 @@ function Level:enteredState()
 
   self:createCamera(conf.width * len, conf.height)
 
-  local x,y = self.grid:convertCoords('cell','world',0,5)
+  local w,h = puzzle.width,puzzle.height
+  local pw,ph = conf.width/conf.squareSize,(conf.height/conf.squareSize)-4
+  local x,y = self.grid:convertCoords('cell','world',(pw-w)/2,(ph-h)/2)
   local box = Box:new(self.world,x,y,puzzle.box)
   self.camera:setPosition(box:getCenter())
 
@@ -62,7 +64,7 @@ function Level:enteredState()
 
   -- offsetHuePalette(20)
 
-  local paneY = conf.height - (maxh + 2) * conf.squareSize
+  local paneY = conf.height - (maxh) * conf.squareSize
   local color = palette.fg
   local x,p = 0
   for i=1,count do

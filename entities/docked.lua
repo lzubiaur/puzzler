@@ -11,6 +11,11 @@ function Docked:enteredState()
   for i=1,#self.squares do
     self:createEventHandlers(self.squares[i])
   end
+  Beholder.group(self,function()
+    Beholder.observe('SaveState',function()
+      self:removeState()
+    end)
+  end)
 end
 
 function Docked:createEventHandlers(target)

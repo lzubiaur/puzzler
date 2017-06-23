@@ -13,6 +13,12 @@ function Commited:enteredState()
   for i=1,#self.squares do
     self:createEventHandlers(self.squares[i])
   end
+  Beholder.group(self,function()
+    Beholder.observe('SaveState',function()
+      self:drop(self.x,self.y)
+      self:saveState('Commited',{x=self.x,y=self.y})
+    end)
+  end)
 end
 
 function Commited:createEventHandlers(target)
@@ -44,10 +50,6 @@ function Commited:createEventHandlers(target)
     Beholder.observe('Cancelled',target,function()
       self:setZOrder(0)
       self:drop(x-ax,y-ay)
-    end)
-    Beholder.observe('SaveState',function()
-      self:drop(self.x,self.y)
-      self:saveState('Commited',{x=self.x,y=self.y})
     end)
   end)
 end
