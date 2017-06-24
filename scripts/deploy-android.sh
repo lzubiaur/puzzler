@@ -8,7 +8,7 @@ LOVE_ANDROID=../love-10.2-android-source
 BUILD=debug
 
 # e.g. com.mycompany.myproject
-PACKAGE=com.voodoocactus.games.mino
+PACKAGE=com.voodoocactus.games.puzzler
 
 FILES="common
 entities

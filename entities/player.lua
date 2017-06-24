@@ -116,7 +116,7 @@ function Player:checkCollisions(dt,len, cols)
       end
     elseif col.other.class.name == 'Checkpoint' then
       if col.other.isGoal then
-        Beholder.trigger('Win')
+        Beholder.trigger('WinLevel')
       end
       self.cpx,self.cpy = col.other.x, col.other.y
       Beholder.trigger('Checkpoint',col.other)

@@ -86,6 +86,7 @@ require 'gamestates.paused'
 require 'gamestates.level'
 require 'gamestates.transitions'
 require 'gamestates.win'
+require 'gamestates.winseason'
 if conf.build == 'debug' then
   require 'gamestates.debug'
 end

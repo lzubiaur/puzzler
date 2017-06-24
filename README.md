@@ -1,3 +1,9 @@
+## TODO
+
+* more games (from a webpage?)
+* tips
+* piece becomes transparent when moving
+
 ## Platformer
 
 Basic framework to bootstrap a platformer.
@@ -26,7 +32,8 @@ main.lua
 
 * GameOver
 * ResetGame
-* Win
+* WinLevel
+* WinSeason
 * (Checkpoint)
 
 ##

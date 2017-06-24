@@ -39,10 +39,10 @@ function Game:initialize()
 end
 
 function Game:destroy()
-  self:saveGameState()
+  self:writeGameState()
 end
 
-function Game:saveGameState()
+function Game:writeGameState()
   Log.info('Serialize game state',Inspect(self.state))
   local data = Binser.serialize(self.state)
   if not data then
@@ -210,6 +210,13 @@ end
 
 -- function love.wheelmoved( x, y )
 -- end
+
+function Game:resetCurrentLevelState()
+  local i = self.state.cli
+  if self.state.levels[i] then
+    self.state.levels[i] = nil
+  end
+end
 
 -- Lazy create and returns the current level state
 function Game:getCurrentLevelState()

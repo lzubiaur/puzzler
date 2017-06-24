@@ -42,6 +42,11 @@ function Entity:containsPoint(x,y)
          self.x + self.w - x > DELTA and self.y + self.h - y > DELTA
 end
 
+function Entity:getEdges()
+  local x,y,w,h = self.x,self.y,self.w,self.h
+  return x,y, x+w,y, x+w,y+h, x,y+h
+end
+
 function Entity:resize(w,h)
   self.w,self.h = w,h
   self.world:update(self,self.x,self.y,self.w,self.h)

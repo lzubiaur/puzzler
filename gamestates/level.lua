@@ -20,9 +20,9 @@ function Level:enteredState()
   self.hud = HUD:new()
   self.hud.currentLevel = self.state.cli
 
-
   local puzzles,len = self:loadWorld()
-  assert(self.state.cli <= len,'Current level id'..self.state.cli..' > number of puzzles '..len)
+  self.nPuzzles = len
+  assert(self.state.cli <= len,'No puzzle for level id '..self.state.cli)
   local puzzle = puzzles[self.state.cli]
 
   self:createCamera(conf.width * len, conf.height)
@@ -56,8 +56,7 @@ function Level:enteredState()
       count = count -1
       self.hud.count = count
       if count == 0 then
-        self.state.cli = self.state.cli + 1
-        self:pushState('Win')
+        self:gotoNextPuzzle()
       end
     end)
   end)
@@ -110,24 +109,61 @@ end
 
 function Level:savePuzzleState()
   Beholder.trigger('SaveState')
+  -- XXX write game state now or when the game quits?
+  self:writeGameState()
 end
 
 function Level:drawAfterCamera()
   self.hud:draw()
 end
 
+function Level:gotoNextPuzzle()
+  if self.state.cli < self.nPuzzles then
+    -- Must save state before incrementing the level id
+    self:savePuzzleState()
+    self.state.cli = self.state.cli + 1
+    self:gotoState('Play')
+  else
+    self:pushState('WinSeason')
+  end
+end
+
+function Level:gotoPreviousPuzzle()
+  if self.state.cli > 1 then
+    -- Must save state before decrementing the level id
+    self:savePuzzleState()
+    self.state.cli = self.state.cli - 1
+    self:gotoState('Play')
+  end
+end
+
+function Level:gotoMainMenu()
+  self:savePuzzleState()
+  self:gotoState('Start')
+end
+
+function Level:resetPuzzle()
+  -- Beholder.trigger('ResetGame')
+  self:resetCurrentLevelState()
+  self:gotoState('Play')
+end
+
 function Level:keypressed(key, scancode, isrepeat)
   if key == 'escape' then
-    Beholder.trigger('SaveState')
-    self:gotoState('Start')
+    self:gotoMainMenu()
   elseif key == 'r' then
-    Beholder.trigger('ResetGame')
-    self:gotoState('Play')
+    self:resetPuzzle()
   elseif key == 'p' then
-    self:pushState('Paused')
-  elseif key == 'd' then
-    self:pushState('Debug')
-  elseif key == 's' then
+    -- self:pushState('Paused')
+  end
+  if conf.build == 'debug' then
+    if key == 's' then
+      self:pushState('Debug')
+    elseif key == 'n' then
+      self:gotoNextPuzzle()
+    elseif key == 'p' then
+      self:gotoPreviousPuzzle()
+    end
   end
 end
 
