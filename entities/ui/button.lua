@@ -4,9 +4,11 @@ local Entity = require 'entities.entity'
 
 local Button = Class('Button',Entity):include(Stateful)
 
-function Button:initialize(world,x,y,w,h,f,opt)
-  Entity.initialize(self,world,x,y,w,h,opt)
-  self.text = opt.text or 'text'
+function Button:initialize(world, x,y, w,h, opt)
+  Entity.initialize(self,world, x,y, w,h, opt)
+  opt = opt or {}
+  self.text = opt.text or ''
+  local onSelected = opt.onSelected or function() end
   self.colors = {
     normal = {255,255,255,255},
     hover = {255,0,0,255},
@@ -28,7 +30,7 @@ function Button:initialize(world,x,y,w,h,f,opt)
     Beholder.observe('Released',self,function(x,y)
       if self:containsPoint(x,y) then
         self.color = self.colors.selected
-        -- f()
+        onSelected()
       else
         self.color = self.colors.normal
       end

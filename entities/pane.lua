@@ -24,12 +24,7 @@ function Pane:initialize(world,x,y,w,h)
       first = false
     end
     if moving then
-      if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
-      for i=1,len do
-        local p = pieces[i]
-        p:moveSquares(p.x+dx,p.y)
-      end
-      self:teleport(self.x+dx,self.y)
+      self:scroll(pieces,len,dx)
     end
   end)
 
@@ -40,6 +35,22 @@ function Pane:initialize(world,x,y,w,h)
   Beholder.observe('Cancelled',self,function()
     first = true
   end)
+
+  Beholder.observe('PaneScrollLeft',function()
+    self:scroll(pieces,len,-conf.squareSize*2)
+  end)
+  Beholder.observe('PaneScrollRight',function()
+    self:scroll(pieces,len,conf.squareSize*2)
+  end)
+end
+
+function Pane:scroll(pieces,len,dx)
+  if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
+  for i=1,len do
+    local p = pieces[i]
+    p:moveSquares(p.x+dx,p.y)
+  end
+  self:teleport(self.x+dx,self.y)
 end
 
 function Pane:draw()

@@ -10,7 +10,7 @@ local function convert(filename)
   for line in file:lines() do
     if string.len(line) > 0 then
       if i == 2 then
-        line = string.gsub(line,'   ','_ ')
+        -- line = string.gsub(line,'   ',' _ ')
         local row = {}
         for col in string.gmatch(line,'%S+') do
           table.insert(row,col)
@@ -40,13 +40,11 @@ local function convert(filename)
 end
 
 -- Using binser.appendFile doesnt work
-Binser.writeFile(path,
-convert('puzzles/raw/01.txt'),
-convert('puzzles/raw/02.txt'),
-convert('puzzles/raw/03.txt'),
-convert('puzzles/raw/04.txt'),
-convert('puzzles/raw/05.txt'),
-convert('puzzles/raw/06.txt'))
+local t = {}
+for i=1,41 do
+  table.insert(t,convert(string.format('puzzles/raw/%02d.txt',i)))
+end
+Binser.writeFile(path,unpack(t))
 
 local results,len = Binser.readFile(path)
 for i=1,len do

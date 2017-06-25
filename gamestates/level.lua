@@ -17,7 +17,7 @@ function Level:enteredState()
 
   local levelId = self.state.cli
 
-  self.hud = HUD:new()
+  self.hud = HUD:new(self.world)
   self.hud.currentLevel = self.state.cli
 
   local puzzles,len = self:loadWorld()
@@ -25,13 +25,7 @@ function Level:enteredState()
   assert(self.state.cli <= len,'No puzzle for level id '..self.state.cli)
   local puzzle = puzzles[self.state.cli]
 
-  self:createCamera(conf.width * len, conf.height)
-
-  local w,h = puzzle.width,puzzle.height
-  local pw,ph = conf.width/conf.squareSize,(conf.height/conf.squareSize)-4
-  local x,y = self.grid:convertCoords('cell','world',(pw-w)/2,(ph-h)/2)
-  local box = Box:new(self.world,x,y,puzzle.box)
-  self.camera:setPosition(box:getCenter())
+  self:createCamera(conf.width,conf.height,0,0,0,0,conf.squareSize)
 
   -- Transpose the pieces to the origin
   local maxh = 0
@@ -48,6 +42,14 @@ function Level:enteredState()
     end
   end
   maxh = maxh + 1
+  local paneHeight = conf.height - maxh * conf.squareSize
+
+  -- Create the box
+  local pw,ph = puzzle.width,puzzle.height
+  local w,h = conf.width/conf.squareSize,(conf.height/conf.squareSize)-maxh
+  local x,y = self.grid:convertCoords('cell','world',(w-pw)/2,(h-ph)/2)
+  local box = Box:new(self.world,x,y,puzzle.box)
+  -- self.camera:setPosition(box:getCenter())
 
   local count = #puzzle.solution
   self.hud.count,self.hud.total = count,count
@@ -63,11 +65,10 @@ function Level:enteredState()
 
   -- offsetHuePalette(20)
 
-  local paneY = conf.height - (maxh) * conf.squareSize
   local color = palette.fg
   local x,p = 0
   for i=1,count do
-    p = Piece:new(self.world,i,puzzle.solution[i],x,paneY,{color={to_rgb(color)}})
+    p = Piece:new(self.world,i,puzzle.solution[i],x,paneHeight,{color={to_rgb(color)}})
     color = color:hue_offset(30)
     -- color = color:lighten_by(1.10)
     -- XXX
@@ -82,7 +83,7 @@ function Level:enteredState()
   end)
 
   -- Make pane "globally" available through the game instance
-  self.pane = Pane:new(self.world,0,paneY,x,maxh*conf.squareSize)
+  self.pane = Pane:new(self.world,0,paneHeight,x,maxh*conf.squareSize)
 
   -- self.follow = Follow:new(self.world,100,100)
   -- local x,y = box:getCenter()
@@ -92,6 +93,7 @@ function Level:enteredState()
 
   -- Ground:new(self.world,0,0,conf.width,conf.height,{zOrder = -2})
 
+  self:createBasicHandlers()
 end
 
 function Level:exitedState()
@@ -137,27 +139,26 @@ function Level:gotoPreviousPuzzle()
   end
 end
 
-function Level:gotoMainMenu()
+function Level:onGotoMainMenu()
   self:savePuzzleState()
   self:gotoState('Start')
 end
 
-function Level:resetPuzzle()
-  -- Beholder.trigger('ResetGame')
+function Level:onResetLevel()
   self:resetCurrentLevelState()
   self:gotoState('Play')
 end
 
 function Level:keypressed(key, scancode, isrepeat)
   if key == 'escape' then
-    self:gotoMainMenu()
+    Beholder.trigger('GotoMainMenu')
   elseif key == 'r' then
-    self:resetPuzzle()
+    Beholder.trigger('ResetGame')
   elseif key == 'p' then
     -- self:pushState('Paused')
   end
   if conf.build == 'debug' then
-    if key == 's' then
+    if key == 'd' then
       self:pushState('Debug')
     elseif key == 'n' then
       self:gotoNextPuzzle()

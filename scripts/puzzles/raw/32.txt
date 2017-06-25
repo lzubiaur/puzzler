@@ -1,0 +1,23 @@
+solving Pentominoes8x8CenterHoleA:
+
+1,1 2,0 2,1 2,2 3,1 X
+0,0 0,1 0,2 0,3 1,0 L
+0,4 1,2 1,3 1,4 2,3 F
+3,0 3,2 4,0 4,1 4,2 U
+5,0 5,1 5,2 6,0 7,0 V
+5,3 6,1 6,2 6,3 7,1 Z
+6,4 6,5 7,2 7,3 7,4 N
+5,6 6,6 7,5 7,6 7,7 T
+3,6 4,5 4,6 5,4 5,5 W
+2,7 3,7 4,7 5,7 6,7 I
+0,5 1,5 2,4 2,5 3,5 Y
+0,6 0,7 1,6 1,7 2,6 P
+
+P P I I I I I T
+P P P W W T T T
+Y Y Y Y W W N T
+F F Y _ _ W N N
+L F F _ _ Z Z N
+L F X U U V Z N
+L X X X U V Z Z
+L L X U U V V V

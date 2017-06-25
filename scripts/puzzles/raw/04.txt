@@ -10,10 +10,10 @@ Polyominoes1234SquarePlus
 2,3 3,3 3,4 4,3 T4
 3,5 3,6 4,4 4,5 Z4
 
-         Z4
-   O4 O4 Z4 Z4 L4
-   O4 O4 T4 Z4 L4
+_  _  _  Z4
+_  O4 O4 Z4 Z4 L4
+_  O4 O4 T4 Z4 L4
 I2 I2 T4 T4 T4 L4 L4
-   I4 I4 I4 I4 V3
-   I3 I3 I3 V3 V3
-         O1
+_  I4 I4 I4 I4 V3
+_  I3 I3 I3 V3 V3
+_  _  _  O1

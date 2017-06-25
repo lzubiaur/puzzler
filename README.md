@@ -2,6 +2,9 @@
 
 * more games (from a webpage?)
 * tips
+* reward player with tips if he watch an ads
+* push notifications
+* rate plugins https://github.com/hotchemi/Android-Rate
 * piece becomes transparent when moving
 
 ## Platformer
@@ -31,7 +34,7 @@ main.lua
 ## Events
 
 * GameOver
-* ResetGame
+* ResetLevel
 * WinLevel
 * WinSeason
 * (Checkpoint)

@@ -27,13 +27,14 @@ function Play:enteredState()
   -- Load the game map
   -- Log.debug('Map size in px:',self.worldWidth, self.worldHeight)
   -- self:createCamera()
-  -- self:createHandlers()
+  -- self:createBasicHandlers()
 end
 
-function Play:createHandlers()
+function Play:createBasicHandlers()
   Beholder.group(self,function()
     Beholder.observe('GameOver',function() self:onGameOver() end)
-    Beholder.observe('ResetGame',function() self:onResetGame() end)
+    Beholder.observe('ResetLevel',function() self:onResetLevel() end)
+    Beholder.observe('GotoMainMenu',function() self:onGotoMainMenu() end)
     Beholder.observe('WinLevel',function()
       Timer.after(0.5,function()
         self:pushState('WinLevel')
@@ -146,8 +147,8 @@ function Play:onGameOver()
   self:pushState('GameplayOut')
 end
 
-function Play:onResetGame()
-  Log.info('Catch event: onResetGame')
+function Play:onResetLevel()
+  Log.info('Catch event: ResetLevel')
 end
 
 -- Update visible entities

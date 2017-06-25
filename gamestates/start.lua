@@ -3,6 +3,7 @@
 local Game = require 'common.game'
 local Entity = require 'entities.entity'
 local Button = require 'entities.ui.button'
+local ImageButton = require 'entities.ui.imagebutton'
 
 local Start = Game:addState('Start')
 
@@ -13,9 +14,37 @@ function Start:enteredState()
 
   self:createCamera(conf.width,conf.height)
 
-  Button:new(self.world,10,10,200,40,function()
-    self:gotoState('Play')
-  end,{text='Play'})
+  Button:new(self.world,conf.width/2-100,30,200,40,{
+    onSelected = function()
+      self:gotoState('Play')
+    end,
+    text='Play'
+  })
+
+  Button:new(self.world,conf.width/2-100,80,200,40,{
+    onSelected = function()
+      if love.system.getOS() == 'Android' then
+        love.system.openURL('https://play.google.com/store/apps/dev?id=7240016677312552672')
+      end
+    end,
+    text='More games'
+  })
+  -- Rate app
+  ImageButton:new(self.world,conf.width/2-100,130,{
+    path = 'resources/img/commenting-o.png',
+    onSelected = function()
+      if love.system.getOS() == 'Android' then
+        love.system.openURL('https://play.google.com/store/apps/details?id=com.voodoocactus.games')
+      end
+    end
+  })
+  -- Quit app
+  ImageButton:new(self.world,0,0,{
+    path = 'resources/img/arrow-left.png',
+    onSelected = function()
+      love.event.push('quit')
+    end
+  })
 
   love.graphics.newFont('resources/fonts/Righteous-Regular.ttf',18)
   self.img = love.graphics.newImage('resources/img/start-bg.png')
@@ -68,10 +97,6 @@ function Start:keypressed(key, scancode, isRepeat)
   elseif key == 'escape' then
     love.event.push('quit')
   end
-end
-
-function Start:touchreleased()
-  self:gotoState('Play')
 end
 
 return Start

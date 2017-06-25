@@ -10,10 +10,10 @@ solving Polyominoes1234_7x3Plus:
 07,2 08,2 08,3 09,3 Z4
 07,3 07,4 08,4 V3
 
-               I3
-               I3
-      L4 O4 O4 I3 T4 V3 V3
+_  _  _  _  _  I3
+_  _  _  _  _  I3
+_  _  L4 O4 O4 I3 T4 V3 V3
 L4 L4 L4 O4 O4 T4 T4 V3 Z4 Z4 O1
-      I4 I4 I4 I4 T4 Z4 Z4
-               I2
-               I2
+_  _  I4 I4 I4 I4 T4 Z4 Z4
+_  _  _  _  _  I2
+_  _  _  _  _  I2

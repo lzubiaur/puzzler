@@ -27,7 +27,7 @@ conf = {
   playerImpulse2 = -1000, -- jump 2 impulse
   playerMaxVelocity = { x=1000,y=1000 },
   -- custom
-  squareSize = 32,
+  squareSize = 20,
 }
 
 -- Load 3rd party libraries/modules globally.
