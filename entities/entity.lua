@@ -1,6 +1,8 @@
 -- entity.lua
 
 -- TODO create a subclass 'PhysicEntity'
+-- TODO had a `visible` flag
+-- TODO implement node/parent entity
 
 -- Physic world entity
 local Entity = Class('Entity')

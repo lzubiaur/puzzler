@@ -17,9 +17,6 @@ function Level:enteredState()
 
   local levelId = self.state.cli
 
-  self.hud = HUD:new(self.world)
-  self.hud.currentLevel = self.state.cli
-
   local puzzles,len = self:loadWorld()
   self.nPuzzles = len
   assert(self.state.cli <= len,'No puzzle for level id '..self.state.cli)
@@ -28,7 +25,7 @@ function Level:enteredState()
   self:createCamera(conf.width,conf.height,0,0,0,0,conf.squareSize)
 
   -- Transpose the pieces to the origin
-  local maxh = 0
+  local paneWidth,pieceMargin,maxh = 0,1,0
   for _,v in pairs(puzzle.solution) do
     local x,y = v[1][1],v[1][2]
     for i=2,#v do
@@ -39,10 +36,11 @@ function Level:enteredState()
       v[i][1] = v[i][1] - x
       v[i][2] = v[i][2] - y
       maxh = math.max(maxh,v[i][2])
+      paneWidth = paneWidth + v[i][1] * conf.squareSize + pieceMargin
     end
   end
   maxh = maxh + 1
-  local paneHeight = conf.height - maxh * conf.squareSize
+  local paneY = conf.height - maxh * conf.squareSize
 
   -- Create the box
   local pw,ph = puzzle.width,puzzle.height
@@ -52,7 +50,6 @@ function Level:enteredState()
   -- self.camera:setPosition(box:getCenter())
 
   local count = #puzzle.solution
-  self.hud.count,self.hud.total = count,count
   Beholder.group(self,function()
     Beholder.observe('Commited',function()
       count = count -1
@@ -66,13 +63,14 @@ function Level:enteredState()
   -- offsetHuePalette(20)
 
   local color = palette.fg
-  local x,p = 0
+  local x,p,pieces = 0,nil,{}
   for i=1,count do
-    p = Piece:new(self.world,i,puzzle.solution[i],x,paneHeight,{color={to_rgb(color)}})
+    p = Piece:new(self.world,i,puzzle.solution[i],x,paneY,{color={to_rgb(color)}})
     color = color:hue_offset(30)
     -- color = color:lighten_by(1.10)
     -- XXX
     x = x + #p.matrix[1] * conf.squareSize + 1
+    table.insert(pieces,p)
   end
 
   Beholder.group(self,function()
@@ -82,8 +80,22 @@ function Level:enteredState()
     end)
   end)
 
+  local paneWidth,paneScrollButtons = x,true
+  if paneWidth < conf.width then
+    x = (conf.width - paneWidth) / 2
+    paneScrollButtons = false
+  else
+    x = 0
+  end
+
   -- Make pane "globally" available through the game instance
-  self.pane = Pane:new(self.world,0,paneHeight,x,maxh*conf.squareSize)
+  self.pane = Pane:new(self.world,0,paneY,paneWidth,maxh*conf.squareSize)
+  if x > 0 then
+    self.pane:teleport(x,paneY)
+    for _,p in ipairs(pieces) do
+      p:moveSquares(p.x+x,p.y)
+    end
+  end
 
   -- self.follow = Follow:new(self.world,100,100)
   -- local x,y = box:getCenter()
@@ -92,6 +104,9 @@ function Level:enteredState()
   -- self:pushState('Debug')
 
   -- Ground:new(self.world,0,0,conf.width,conf.height,{zOrder = -2})
+
+  self.hud = HUD:new(self.world,{ paneScrollButtons = paneScrollButtons })
+  self.hud.currentLevel = self.state.cli
 
   self:createBasicHandlers()
 end
