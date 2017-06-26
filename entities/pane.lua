@@ -37,18 +37,20 @@ function Pane:initialize(world,x,y,w,h)
   end)
 
   Beholder.observe('PaneScrollLeft',function()
-    self:scroll(pieces,len,-conf.squareSize*2)
+    self:scroll(pieces,len,conf.squareSize*2)
   end)
   Beholder.observe('PaneScrollRight',function()
-    self:scroll(pieces,len,conf.squareSize*2)
+    self:scroll(pieces,len,-conf.squareSize*2)
   end)
 end
 
 function Pane:scroll(pieces,len,dx)
+  local ax = self.x + self.w
+  if self.x > 0 or ax < conf.width then return end
   if self.x + dx > 0 then
     dx = math.abs(self.x)
-  elseif self.x + self.w + dx < game:toWorld(conf.width) then
-    dx = conf.width - (self.x + self.w)
+  elseif ax + dx < conf.width then
+    dx = conf.width - ax
   end
   -- if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
   for i=1,len do

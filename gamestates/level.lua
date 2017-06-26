@@ -82,10 +82,9 @@ function Level:enteredState()
     end)
   end)
 
-  local paneWidth,paneScrollButtons = x,true
+  local paneWidth = x,true
   if paneWidth < conf.width then
     x = (conf.width - paneWidth) / 2
-    paneScrollButtons = false
     self.hud.scrollLeftButton.hidden = true
     self.hud.scrollRightButton.hidden = true
   else

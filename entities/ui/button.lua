@@ -30,7 +30,7 @@ function Button:initialize(world, x,y, w,h, opt)
     Beholder.observe('Released',self,function(x,y)
       if self:containsPoint(x,y) then
         self.color = self.colors.selected
-        onSelected()
+        onSelected(self)
       else
         self.color = self.colors.normal
       end

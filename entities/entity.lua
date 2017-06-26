@@ -5,7 +5,7 @@
 -- x,y
 -- w,h
 -- zOrder
--- hidden
+-- hidden: hidden entities are not drawn and do not participate in touch events
 
 -- TODO create a subclass 'PhysicEntity'
 -- TODO implement node/parent entity

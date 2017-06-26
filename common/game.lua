@@ -90,7 +90,7 @@ function Game:keypressed(key, scancode, isRepeat)
 end
 
 function Game:touchFilter(item)
-    return true
+  return not item.hidden
 end
 
 -- 'Pressed' event
