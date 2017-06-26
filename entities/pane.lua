@@ -45,7 +45,12 @@ function Pane:initialize(world,x,y,w,h)
 end
 
 function Pane:scroll(pieces,len,dx)
-  if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
+  if self.x + dx > 0 then
+    dx = math.abs(self.x)
+  elseif self.x + self.w + dx < game:toWorld(conf.width) then
+    dx = conf.width - (self.x + self.w)
+  end
+  -- if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
   for i=1,len do
     local p = pieces[i]
     p:moveSquares(p.x+dx,p.y)

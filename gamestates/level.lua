@@ -15,7 +15,8 @@ function Level:enteredState()
   Log.info('Entered state "Level"')
   self.entities = {}
 
-  local levelId = self.state.cli
+  self.hud = HUD:new(self.world)
+  self.hud.currentLevel = self.state.cli
 
   local puzzles,len = self:loadWorld()
   self.nPuzzles = len
@@ -53,10 +54,12 @@ function Level:enteredState()
   Beholder.group(self,function()
     Beholder.observe('Commited',function()
       count = count -1
-      self.hud.count = count
       if count == 0 then
         self:gotoNextPuzzle()
       end
+    end)
+    Beholder.observe('GotoNextPuzzle',function()
+      self:gotoNextPuzzle()
     end)
   end)
 
@@ -76,7 +79,6 @@ function Level:enteredState()
   Beholder.group(self,function()
     Beholder.observe('Docked',function()
       count = count + 1
-      self.hud.count = count
     end)
   end)
 
@@ -84,6 +86,8 @@ function Level:enteredState()
   if paneWidth < conf.width then
     x = (conf.width - paneWidth) / 2
     paneScrollButtons = false
+    self.hud.scrollLeftButton.hidden = true
+    self.hud.scrollRightButton.hidden = true
   else
     x = 0
   end
@@ -104,9 +108,6 @@ function Level:enteredState()
   -- self:pushState('Debug')
 
   -- Ground:new(self.world,0,0,conf.width,conf.height,{zOrder = -2})
-
-  self.hud = HUD:new(self.world,{ paneScrollButtons = paneScrollButtons })
-  self.hud.currentLevel = self.state.cli
 
   self:createBasicHandlers()
 end

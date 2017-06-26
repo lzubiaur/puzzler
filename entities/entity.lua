@@ -1,7 +1,13 @@
 -- entity.lua
 
+-- Entity fields:
+-- id
+-- x,y
+-- w,h
+-- zOrder
+-- hidden
+
 -- TODO create a subclass 'PhysicEntity'
--- TODO had a `visible` flag
 -- TODO implement node/parent entity
 
 -- Physic world entity
@@ -20,7 +26,7 @@ function Entity:initialize(world, x,y, w,h, opt)
     mx = opt.mx or 800, my = opt.my or 800, -- maximum velocity
     vx = opt.vx or 0, vy = opt.vy or 0, -- current velocity
     mass = opt.mass or 1,
-    id = opt.id
+    id = opt.id,
   })
   -- Log.debug('create entity ',self,x,y,self.mx,self.my,self.zOrder)
   -- add this instance to the physics world

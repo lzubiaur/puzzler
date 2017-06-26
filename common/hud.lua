@@ -6,22 +6,20 @@ local HUD = Class('HUD')
 
 function HUD:initialize(world,opt)
   opt = opt or {}
-  if opt.paneScrollButtons then
-    ImageButton:new(world,conf.width-100,conf.height-100,{
-      zOrder = 3,
-      path = 'resources/img/chevron-right.png',
-      onSelected = function()
-        Beholder.trigger('PaneScrollRight')
-      end
-    })
-    ImageButton:new(world,0,conf.height-100,{
-      zOrder = 3,
-      path = 'resources/img/chevron-left.png',
-      onSelected = function()
-        Beholder.trigger('PaneScrollLeft')
-      end
-    })
-  end
+  self.scrollRightButton = ImageButton:new(world,conf.width-100,conf.height-100,{
+    zOrder = 3,
+    path = 'resources/img/chevron-right.png',
+    onSelected = function()
+      Beholder.trigger('PaneScrollRight')
+    end
+  })
+  self.scrollLeftButton = ImageButton:new(world,0,conf.height-100,{
+    zOrder = 3,
+    path = 'resources/img/chevron-left.png',
+    onSelected = function()
+      Beholder.trigger('PaneScrollLeft')
+    end
+  })
   -- Reset game
   ImageButton:new(world,conf.width-100,0,{
     zOrder = 3,

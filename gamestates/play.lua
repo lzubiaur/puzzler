@@ -112,7 +112,11 @@ function Play:drawEntities(l,t,w,h)
     -- Only draw only visible entities
     local items,len = self.world:queryRect(l,t,w,h)
     table.sort(items,Entity.sortByZOrder)
-    Lume.each(items,'draw')
+    for i=1,len do
+      if not items[i].hidden then
+        items[i]:draw()
+      end
+    end
 end
 
 function Play:drawBeforeCamera()
