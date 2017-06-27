@@ -24,10 +24,6 @@ function Win:drawAfterCamera()
   g.printf('Cleared!',0,conf.height/2-self.fontHeight/2,conf.width,'center')
 end
 
-function Win:touchreleased(id, x, y, dx, dy, pressure)
-  -- self:gotoState('Play')
-end
-
 function Win:keypressed(key, scancode, isrepeat)
   if key == 'space' or key == 'escape' then
     self:gotoState('Play')

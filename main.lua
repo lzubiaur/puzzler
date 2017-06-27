@@ -87,6 +87,7 @@ require 'gamestates.level'
 require 'gamestates.transitions'
 require 'gamestates.win'
 require 'gamestates.winseason'
+require 'gamestates.credits'
 -- Create the derived class 'MyGame' after creating the states so
 -- 'MyGame' can inherite them
 local Game = require 'common.mygame'

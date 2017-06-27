@@ -76,16 +76,64 @@ function Game:updateShaders(dt,shift,alpha)
   -- shader:send('alpha', alpha)
 end
 
-function Game:update(dt)
-  error('Game:update() is not implemented')
+function Game:keypressed(key, scancode, isRepeat)
+  -- nothing to do
+end
+
+function Game:drawEntities(l,t,w,h)
+    -- Only draw only visible entities
+    local items,len = self.world:queryRect(l,t,w,h)
+    table.sort(items,Entity.sortByZOrderAsc)
+    for i=1,len do
+      if not items[i].hidden then
+        items[i]:draw()
+      end
+    end
+end
+
+function Game:drawBeforeCamera()
+end
+
+function Game:drawAfterCamera()
 end
 
 function Game:draw()
-  error('Game:draw() is not implemented')
+  Push:start()
+  g.clear(to_rgb(palette.bg))
+  self:drawBeforeCamera()
+  self.camera:draw(function(l,t,w,h)
+    self:drawEntities(l,t,w,h) -- Call a function so it can be override by other state
+  end)
+  self:drawAfterCamera()
+  Push:finish()
 end
 
-function Game:keypressed(key, scancode, isRepeat)
-  -- nothing to do
+-- Update visible entities
+function Game:updateEntities(dt)
+  -- TODO add a padding parameter to update outside the visible windows
+  local l,t,h,w = self.camera:getVisible()
+  local items,len = self.world:queryRect(l,t,w,h)
+  Lume.each(items,'update',dt)
+end
+
+function Game:updateCamera(dt)
+  -- Move the camera
+  -- TODO smooth the camera. X doesnt work smoothly
+  -- TODO Check Lume.smooth instead of lerp for X (and y?)
+  if self.follow then
+    local x,y = self.camera:getPosition()
+    local px, py = self.follow:getCenter()
+    self.camera:setPosition(px + conf.camOffsetX, Lume.lerp(y,py,0.05))
+    self.parallax:setTranslation(px,py)
+  end
+  -- self.parallax:update(dt) -- not required
+end
+
+function Game:update(dt)
+  Timer.update(dt)
+  -- self:updateShaders(dt)
+  self:updateEntities(dt)
+  self:updateCamera(dt)
 end
 
 function Game:touchFilter(item)

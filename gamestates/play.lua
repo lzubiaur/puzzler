@@ -58,22 +58,22 @@ function Play:exitedState()
   Log.debug('Memory usage:',collectgarbage("count")/1024)
 end
 
-function Play:pausedState()
-  Log.info('Paused state "Play"')
-end
-
-function Play:continuedState()
-  Log.info('Continued state "Play"')
-end
-
-function Play:pushedState()
-  Log.info('Pushed state "Play"')
-end
-
-function Play:poppedState()
-  Log.info('Popped state "Play"')
-end
-
+-- function Play:pausedState()
+--   Log.info('Paused state "Play"')
+-- end
+--
+-- function Play:continuedState()
+--   Log.info('Continued state "Play"')
+-- end
+--
+-- function Play:pushedState()
+--   Log.info('Pushed state "Play"')
+-- end
+--
+-- function Play:poppedState()
+--   Log.info('Popped state "Play"')
+-- end
+--
 -- Must return the world size (w,h)
 function Play:loadWorld()
   local filename = string.format('resources/maps/map%02d.lua',self.state.csi)
@@ -108,44 +108,6 @@ function Play:drawParallax()
   self.parallax:pop()
 end
 
-function Play:drawEntities(l,t,w,h)
-    -- Only draw only visible entities
-    local items,len = self.world:queryRect(l,t,w,h)
-    table.sort(items,Entity.sortByZOrderAsc)
-    for i=1,len do
-      if not items[i].hidden then
-        items[i]:draw()
-      end
-    end
-end
-
-function Play:drawBeforeCamera()
-end
-
-function Play:drawAfterCamera()
-  g.setColor(255,255,255,255)
-  g.print([[Esc: quit
-d: switch debug mode
-p: pause]])
-end
-
-function Play:draw()
-  Push:start()
-  g.clear(to_rgb(palette.bg))
-
-  -- self:drawParallax()
-
-  self:drawBeforeCamera()
-
-  self.camera:draw(function(l,t,w,h)
-    self:drawEntities(l,t,w,h) -- Call a function so it can be override by other state
-  end)
-
-  self:drawAfterCamera()
-
-  Push:finish()
-end
-
 function Play:onGameOver()
   Log.info('Game Over!')
   self:pushState('GameplayOut')
@@ -153,34 +115,6 @@ end
 
 function Play:onResetLevel()
   Log.info('Catch event: ResetLevel')
-end
-
--- Update visible entities
-function Play:updateEntities(dt)
-  -- TODO add a padding parameter to update outside the visible windows
-  local l,t,h,w = self.camera:getVisible()
-  local items,len = self.world:queryRect(l,t,w,h)
-  Lume.each(items,'update',dt)
-end
-
-function Play:updateCamera(dt)
-  -- Move the camera
-  -- TODO smooth the camera. X doesnt work smoothly
-  -- TODO Check Lume.smooth instead of lerp for X (and y?)
-  if self.follow then
-    local x,y = self.camera:getPosition()
-    local px, py = self.follow:getCenter()
-    self.camera:setPosition(px + conf.camOffsetX, Lume.lerp(y,py,0.05))
-    self.parallax:setTranslation(px,py)
-  end
-  -- self.parallax:update(dt) -- not required
-end
-
-function Play:update(dt)
-  Timer.update(dt)
-  -- self:updateShaders(dt)
-  self:updateEntities(dt)
-  self:updateCamera(dt)
 end
 
 function Play:keypressed(key, scancode, isrepeat)

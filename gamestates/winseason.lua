@@ -22,10 +22,6 @@ function WinSeason:drawAfterCamera()
   g.printf('Thank you for playing Puzzler!',0,conf.height/2-self.fontHeight/2,conf.width,'center')
 end
 
-function WinSeason:touchreleased(id, x, y, dx, dy, pressure)
-    self:gotoState('Start')
-end
-
 function WinSeason:keypressed(key, scancode, isrepeat)
   if key == 'space' or key == 'escape' then
     self:gotoState('Start')

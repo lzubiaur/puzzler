@@ -34,13 +34,13 @@ function Start:enteredState()
       if love.system.getOS() == 'Android' then
         love.system.openURL('https://play.google.com/store/apps/dev?id=7240016677312552672')
       end
-    end ,
+    end,
     text='More games',
     color = { Lume.color('#77769e',255) },
     textColor = { Lume.color('#fef8d7',255) },
   })
   -- Rate app
-  ImageButton:new(self.world,conf.width/2-69,280,{
+  ImageButton:new(self.world,conf.width/2-96,280,{
     path = 'resources/img/commenting2.png',
     onSelected = function()
       if love.system.getOS() == 'Android' then
@@ -50,10 +50,18 @@ function Start:enteredState()
     color = { Lume.color('#77769e',255) },
   })
   -- facebook
-  ImageButton:new(self.world,conf.width/2+5,280,{
+  ImageButton:new(self.world,conf.width/2-32,280,{
     path = 'resources/img/facebook-official.png',
     onSelected = function()
       love.system.openURL('https://www.facebook.com/voodocactustudio/')
+    end,
+    color = { Lume.color('#77769e',255) },
+  })
+  -- credits
+  ImageButton:new(self.world,conf.width/2+32,280,{
+    path = 'resources/img/info-circle.png',
+    onSelected = function()
+      self:pushState('Credits')
     end,
     color = { Lume.color('#77769e',255) },
   })
@@ -80,39 +88,8 @@ function Start:enteredState()
   'inOutCubic')
 end
 
-function Start:drawEntities(l,t,w,h)
-    -- Only draw only visible entities
-    local items,len = self.world:queryRect(l,t,w,h)
-    table.sort(items,Entity.sortByZOrderAsc)
-    Lume.each(items,'draw')
-end
-
-function Start:draw()
-  Push:start()
-    g.setColor(to_rgb(palette.text))
-    g.clear(to_rgb(palette.bg))
-
-    self.camera:draw(function(l,t,w,h)
-      self:drawEntities(l,t,w,h) -- Call a function so it can be override by other state
-    end)
-
-  g.setColor(255,255,255,255)
-  g.draw(self.logo,65,20,0,0.8,0.8)
-  Push:finish()
-end
-
--- Update visible entities
-function Start:updateEntities(dt)
-  -- TODO add a padding parameter to update outside the visible windows
-  local l,t,h,w = self.camera:getVisible()
-  local items,len = self.world:queryRect(l,t,w,h)
-  Lume.each(items,'update',dt)
-end
-
-function Start:update(dt)
-  Timer.update(dt)
-  self:updateEntities(dt)
-  -- self:updateShaders(dt)
+function Start:poppedState()
+  self.swallowTouch = false
 end
 
 function Start:keypressed(key, scancode, isRepeat)
@@ -123,6 +100,11 @@ function Start:keypressed(key, scancode, isRepeat)
   elseif key == 'escape' then
     love.event.push('quit')
   end
+end
+
+function Start:drawAfterCamera()
+  g.setColor(255,255,255,255)
+  g.draw(self.logo,65,10,0,.8,.8)
 end
 
 return Start
