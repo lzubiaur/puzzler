@@ -10,9 +10,10 @@ function Cell:initialize(world,x,y,opt)
 end
 
 function Cell:draw()
-  g.setColor(to_rgb(palette.base,128))
-  g.rectangle('fill',self.x+1,self.y+1,self.w-2,self.h-2,5)
-  -- Entity.draw(self)
+  g.setColor(to_rgb(palette.base))
+  g.rectangle('fill',self.x,self.y,self.w,self.h)
+  -- g.setColor(255,255,255,128)
+  -- g.rectangle('line',self.x+.5,self.y+.5,self.w-1,self.h-1)
 end
 
 return Cell

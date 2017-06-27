@@ -6,7 +6,7 @@ local Entity = require 'entities.entity'
 local Pane = Class('Pane',Entity)
 
 function Pane:initialize(world,x,y,w,h)
-  Entity.initialize(self,world,x,y,w,h,{zOrder=-1})
+  Entity.initialize(self,world,x,y,w,h,{zOrder=-4})
 
   local pieces,len = {},0
   Beholder.observe('Pressed',self,function(x,y)
@@ -49,8 +49,10 @@ function Pane:scroll(pieces,len,dx)
   if self.x > 0 or ax < conf.width then return end
   if self.x + dx > 0 then
     dx = math.abs(self.x)
+    Beholder.trigger('ScrolledTopRight')
   elseif ax + dx < conf.width then
     dx = conf.width - ax
+    Beholder.trigger('ScrolledTopLeft')
   end
   -- if self.x+dx > 0 or self.x+self.w+dx < game:toWorld(conf.width) then return end
   for i=1,len do
@@ -61,8 +63,8 @@ function Pane:scroll(pieces,len,dx)
 end
 
 function Pane:draw()
-  -- g.setColor(0,255,0,255)
-  -- g.rectangle('line',self.x,self.y,self.w,self.h)
+  -- g.setColor(to_rgb(palette.base,128))
+  -- g.rectangle('fill',self.x-2,self.y-2,self.w+4,self.h+4)
 end
 
 return Pane

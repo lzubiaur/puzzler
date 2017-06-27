@@ -62,13 +62,15 @@ end
 function Piece:initialize(world,id,t,x,y,opt)
   -- ox,oy are the origin piece position
   self.color,self.ox,self.oy = opt.color,x,y
+  -- self.shadowColor = { to_rgb(rgb_to_color(unpack(self.color)):lighten_by(.7)) }
+  self.shadowColor = { Lume.color('#fef8d7',255) }
   if type(t) == 'string' then
     t = pieces[t]
     assert(t,'Unknow piece')
     self.name = t
   end
   self.matrix = to_matrix(t)
-  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize,{id=id})
+  Entity.initialize(self,world,x,y,conf.squareSize,conf.squareSize,{id=id,zOrder=-1})
   id = id + 1
   self:createSquares()
 
@@ -99,8 +101,7 @@ function Piece:createSquares()
     for j=1,#m[i] do
       if m[i][j] == 1 then
         local sx,sy = self.x+(j-1)*conf.squareSize,self.y+(i-1)*conf.squareSize
-        local square = Square:new(self.world,sx,sy)
-        square.color = self.color
+        local square = Square:new(self.world,sx,sy,{color = self.color})
         table.insert(self.squares,square)
       end
     end
@@ -182,6 +183,11 @@ end
 function Piece:draw()
   -- g.setColor(0,255,255,255)
   -- g.rectangle('line',self.x,self.y,self.w,self.h)
+  g.setColor(unpack(self.shadowColor))
+  for _,p in ipairs(self.squares) do
+    -- g.rectangle('fill',p.x+1,p.y+1,p.w+1,p.h+1)
+    g.rectangle('fill',p.x-2,p.y-2,p.w+4,p.h+4)
+  end
 end
 
 -- function Piece:update()

@@ -1,11 +1,16 @@
 ## TODO
 
+* credits
 * more games (from a webpage?)
 * tips
 * reward player with tips if he watch an ads
 * push notifications
 * rate plugins https://github.com/hotchemi/Android-Rate
 * piece becomes transparent when moving
+
+## credits
+ Background patterns from Subtle Patterns
+ Puzzles from Polyform Puzzler
 
 ## Platformer
 

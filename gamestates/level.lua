@@ -7,13 +7,15 @@ local Box = require 'entities.box'
 local Pane = require 'entities.pane'
 local Follow = require 'entities.follow'
 local HUD = require 'common.hud'
--- local Ground = require 'entities.ground'
+local Ground = require 'entities.ground'
 
 local Level = Game:addState('Level')
 
 function Level:enteredState()
   Log.info('Entered state "Level"')
   self.entities = {}
+
+  Log.info('Play puzzle ',self.state.cli)
 
   self.hud = HUD:new(self.world)
   self.hud.currentLevel = self.state.cli
@@ -72,7 +74,7 @@ function Level:enteredState()
     color = color:hue_offset(30)
     -- color = color:lighten_by(1.10)
     -- XXX
-    x = x + #p.matrix[1] * conf.squareSize + 1
+    x = x + #p.matrix[1] * conf.squareSize -- + 1
     table.insert(pieces,p)
   end
 
@@ -91,14 +93,19 @@ function Level:enteredState()
     x = 0
   end
 
-  -- Make pane "globally" available through the game instance
-  self.pane = Pane:new(self.world,0,paneY,paneWidth,maxh*conf.squareSize)
+  -- Center the pane and the docked pieces
+  local pane = Pane:new(self.world,0,paneY,paneWidth,maxh*conf.squareSize)
   if x > 0 then
-    self.pane:teleport(x,paneY)
+    local pieces,len = self.world:queryRect(pane.x,pane.y,pane.w,pane.h,function(item)
+      return item.class.name == 'Piece'
+    end)
     for _,p in ipairs(pieces) do
       p:moveSquares(p.x+x,p.y)
     end
+    pane:teleport(x,paneY)
   end
+  -- Make pane "globally" available through the game instance
+  self.pane = pane
 
   -- self.follow = Follow:new(self.world,100,100)
   -- local x,y = box:getCenter()
@@ -106,8 +113,7 @@ function Level:enteredState()
 
   -- self:pushState('Debug')
 
-  -- Ground:new(self.world,0,0,conf.width,conf.height,{zOrder = -2})
-
+  self:newBackground()
   self:createBasicHandlers()
 end
 
@@ -132,6 +138,23 @@ end
 
 function Level:drawAfterCamera()
   self.hud:draw()
+end
+
+function Level:newBackground()
+  if not self.state.patternId then
+    self.state.patternId = 1
+  elseif self.state.patternId < 14 then
+    self.state.patternId = self.state.patternId + 1
+  else
+    self.state.patternId = 1
+  end
+  local filename = string.format('resources/img/patterns/pattern%02d.png',self.state.patternId)
+  Log.info('Pattern',filename)
+  local ground = Ground:new(self.world,0,0,conf.width,conf.height,{path=filename,zOrder=-5})
+  Timer.after(5,function()
+    ground:fadeOutAndRemove()
+    self:newBackground()
+  end)
 end
 
 function Level:gotoNextPuzzle()

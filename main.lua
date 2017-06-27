@@ -121,6 +121,9 @@ function love.load()
   })
 
   game = Game:new()
+  -- must call gotoState "outside" Game:initialize or the global 'game'
+  -- instance will not be available inside the 'start' state yet
+  game:gotoState('Start')
 end
 
 function love.draw()

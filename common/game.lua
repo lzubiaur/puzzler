@@ -33,9 +33,6 @@ function Game:initialize()
   love.graphics.setPointSize(conf.pointSize)
 
   i18n.loadFile('resources/i18n.lua')
-
-  -- self.nextState = 'Start'
-  self:gotoState('Start')
 end
 
 function Game:destroy()
