@@ -5,8 +5,10 @@ local Entity = require 'entities.entity'
 local Button = Class('Button',Entity):include(Stateful)
 
 function Button:initialize(world, x,y, w,h, opt)
-  Entity.initialize(self,world, x,y, w,h, opt)
   opt = opt or {}
+  opt.zOrder = opt.zOrder or 10
+  Entity.initialize(self,world, x,y, w,h, opt)
+
   self.oy,self.os = 0,7 -- offset
   self.text = opt.text or ''
   local onSelected = opt.onSelected or function() end

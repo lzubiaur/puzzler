@@ -117,8 +117,14 @@ function Entity:applyCollisionNormal(nx, ny, bounciness)
   self.vx, self.vy = vx, vy
 end
 
-function Entity:sortByZOrder(other)
+-- Ascending ZOrder
+function Entity:sortByZOrderAsc(other)
   return self.zOrder < other.zOrder
+end
+
+-- Descending ZOrder
+function Entity:sortByZOrderDesc(other)
+  return self.zOrder > other.zOrder
 end
 
 function Entity:update(dt)
@@ -127,7 +133,7 @@ end
 
 -- debug draw
 function Entity:draw()
-  g.rectangle('fill',self.x,self.y,self.w,self.h)
+  -- g.rectangle('fill',self.x,self.y,self.w,self.h)
 end
 
 function Entity:loadState()

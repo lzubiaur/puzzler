@@ -1,4 +1,5 @@
 -- game.lua
+local Entity = require 'entities.entity'
 
 local Game = Class('Game'):include(Stateful)
 
@@ -6,6 +7,7 @@ function Game:initialize()
   Log.info('Create the game instance.')
 
   self.entities = {}
+  self.swallowTouch = false
 
   self.state = {
     path = 'db.data', -- this database filename
@@ -95,6 +97,9 @@ end
 function Game:pressed(x, y)
   x,y = self:screenToWorld(x,y)
   local items, len = self.world:queryPoint(x,y,function(item) return self:touchFilter(item) end)
+  table.sort(items,Entity.sortByZOrderDesc)
+  -- If swallow touch is enable only the first entity (highest zOrder) will be triggerd
+  if self.swallowTouch and len > 1 then len = 1 end
   for i=1,len do
     local ent = items[i]
     Beholder.trigger('Pressed',ent,x,y)

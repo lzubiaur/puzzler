@@ -5,7 +5,7 @@
 LOVE_ANDROID=../love-10.2-android-source
 
 # debug/release
-BUILD=debug
+BUILD=release
 
 # e.g. com.mycompany.myproject
 PACKAGE=com.voodoocactus.games.puzzler

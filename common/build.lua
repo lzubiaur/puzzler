@@ -1,1 +1,1 @@
-return 'debug'
+return 'release'

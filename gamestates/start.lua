@@ -4,7 +4,6 @@ local Game = require 'common.game'
 local Entity = require 'entities.entity'
 local Button = require 'entities.ui.button'
 local ImageButton = require 'entities.ui.imagebutton'
-local Ground = require 'entities.ground'
 
 local Start = Game:addState('Start')
 
@@ -14,15 +13,15 @@ function Start:enteredState()
   Timer.clear()
 
   self.world = Bump.newWorld(conf.cellSize)
-
   self:createCamera(conf.width,conf.height)
-
-  self:newGround()
+  self:newBackground()
+  self.logo = g.newImage('resources/img/logo.png')
 
   local font = love.graphics.newFont('resources/fonts/Boogaloo-Regular.ttf',32)
+  self.fontHeight = font:getHeight()
   love.graphics.setFont(font)
 
-  Button:new(self.world,conf.width/2-100,30,200,40,{
+  Button:new(self.world,conf.width/2-100,160,200,40,{
     onSelected = function()
       self:gotoState('Play')
     end,
@@ -30,8 +29,7 @@ function Start:enteredState()
     color = { Lume.color('#de5a4c',255) },
     textColor = { Lume.color('#fef8d7',255) },
   })
-
-  Button:new(self.world,conf.width/2-100,80,200,40,{
+  Button:new(self.world,conf.width/2-100,220,200,40,{
     onSelected = function()
       if love.system.getOS() == 'Android' then
         love.system.openURL('https://play.google.com/store/apps/dev?id=7240016677312552672')
@@ -42,23 +40,31 @@ function Start:enteredState()
     textColor = { Lume.color('#fef8d7',255) },
   })
   -- Rate app
-  ImageButton:new(self.world,conf.width/2-100,130,{
-    path = 'resources/img/commenting-o.png',
+  ImageButton:new(self.world,conf.width/2-69,280,{
+    path = 'resources/img/commenting2.png',
     onSelected = function()
       if love.system.getOS() == 'Android' then
-        love.system.openURL('https://play.google.com/store/apps/details?id=com.voodoocactus.games')
+        love.system.openURL('https://play.google.com/store/apps/details?id=com.voodoocactus.games.puzzler')
       end
     end,
     color = { Lume.color('#77769e',255) },
   })
-  -- Quit app
-  ImageButton:new(self.world,0,0,{
-    path = 'resources/img/arrow-left.png',
+  -- facebook
+  ImageButton:new(self.world,conf.width/2+5,280,{
+    path = 'resources/img/facebook-official.png',
     onSelected = function()
-      love.event.push('quit')
+      love.system.openURL('https://www.facebook.com/voodocactustudio/')
     end,
     color = { Lume.color('#77769e',255) },
   })
+  -- Quit app
+  -- ImageButton:new(self.world,0,0,{
+  --   path = 'resources/img/arrow-left.png',
+  --   onSelected = function()
+  --     love.event.push('quit')
+  --   end,
+  --   color = { Lume.color('#77769e',255) },
+  -- })
 
   self.progress = {
     -- Add transition parameters here
@@ -74,27 +80,10 @@ function Start:enteredState()
   'inOutCubic')
 end
 
-function Start:newGround()
-  if not self.state.patternId then
-    self.state.patternId = 1
-  elseif self.state.patternId < 15 then
-    self.state.patternId = self.state.patternId + 1
-  else
-    self.state.patternId = 1
-  end
-  local filename = string.format('resources/img/patterns/pattern%02d.png',self.state.patternId)
-  Log.info('Pattern',filename)
-  local ground = Ground:new(self.world,0,0,conf.width,conf.height,{path=filename,zOrder=-5})
-  Timer.after(5,function()
-    ground:fadeOutAndRemove()
-    self:newGround()
-  end)
-end
-
 function Start:drawEntities(l,t,w,h)
     -- Only draw only visible entities
     local items,len = self.world:queryRect(l,t,w,h)
-    table.sort(items,Entity.sortByZOrder)
+    table.sort(items,Entity.sortByZOrderAsc)
     Lume.each(items,'draw')
 end
 
@@ -107,6 +96,8 @@ function Start:draw()
       self:drawEntities(l,t,w,h) -- Call a function so it can be override by other state
     end)
 
+  g.setColor(255,255,255,255)
+  g.draw(self.logo,65,20,0,0.8,0.8)
   Push:finish()
 end
 

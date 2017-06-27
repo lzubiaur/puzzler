@@ -111,7 +111,7 @@ end
 function Play:drawEntities(l,t,w,h)
     -- Only draw only visible entities
     local items,len = self.world:queryRect(l,t,w,h)
-    table.sort(items,Entity.sortByZOrder)
+    table.sort(items,Entity.sortByZOrderAsc)
     for i=1,len do
       if not items[i].hidden then
         items[i]:draw()

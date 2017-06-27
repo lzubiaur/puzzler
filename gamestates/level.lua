@@ -14,6 +14,7 @@ local Level = Game:addState('Level')
 function Level:enteredState()
   Log.info('Entered state "Level"')
   self.entities = {}
+  self.swallowTouch = false
 
   Log.info('Play puzzle ',self.state.cli)
 
@@ -57,11 +58,11 @@ function Level:enteredState()
     Beholder.observe('Commited',function()
       count = count -1
       if count == 0 then
-        self:gotoNextPuzzle()
+        self:onPuzzleSolved()
       end
     end)
     Beholder.observe('GotoNextPuzzle',function()
-      self:gotoNextPuzzle()
+      self:gotoState('Play')
     end)
   end)
 
@@ -140,29 +141,12 @@ function Level:drawAfterCamera()
   self.hud:draw()
 end
 
-function Level:newBackground()
-  if not self.state.patternId then
-    self.state.patternId = 1
-  elseif self.state.patternId < 14 then
-    self.state.patternId = self.state.patternId + 1
-  else
-    self.state.patternId = 1
-  end
-  local filename = string.format('resources/img/patterns/pattern%02d.png',self.state.patternId)
-  Log.info('Pattern',filename)
-  local ground = Ground:new(self.world,0,0,conf.width,conf.height,{path=filename,zOrder=-5})
-  Timer.after(5,function()
-    ground:fadeOutAndRemove()
-    self:newBackground()
-  end)
-end
-
-function Level:gotoNextPuzzle()
+function Level:onPuzzleSolved()
   if self.state.cli < self.nPuzzles then
     -- Must save state before incrementing the level id
     self:savePuzzleState()
     self.state.cli = self.state.cli + 1
-    self:gotoState('Play')
+    self:pushState('Win')
   else
     self:pushState('WinSeason')
   end
@@ -199,7 +183,7 @@ function Level:keypressed(key, scancode, isrepeat)
     if key == 'd' then
       self:pushState('Debug')
     elseif key == 'n' then
-      self:gotoNextPuzzle()
+      self:onPuzzleSolved()
     elseif key == 'p' then
       self:gotoPreviousPuzzle()
     end

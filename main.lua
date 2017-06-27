@@ -77,7 +77,7 @@ Log.usecolor = true
 
 require 'common.palette'
 
-local Game = require 'common.game'
+require 'common.game'
 -- Game states must be loaded after the Game class is created
 require 'gamestates.loading'
 require 'gamestates.start'
@@ -87,6 +87,11 @@ require 'gamestates.level'
 require 'gamestates.transitions'
 require 'gamestates.win'
 require 'gamestates.winseason'
+-- Create the derived class 'MyGame' after creating the states so
+-- 'MyGame' can inherite them
+local Game = require 'common.mygame'
+
+-- Entities states
 if conf.build == 'debug' then
   require 'gamestates.debug'
 end
