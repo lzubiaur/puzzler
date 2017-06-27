@@ -41,7 +41,7 @@ end
 
 -- Using binser.appendFile doesnt work
 local t = {}
-for i=1,41 do
+for i=1,66 do
   table.insert(t,convert(string.format('puzzles/raw/%02d.txt',i)))
 end
 Binser.writeFile(path,unpack(t))
