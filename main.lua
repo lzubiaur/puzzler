@@ -117,6 +117,8 @@ function love.load()
   -- Gets the width and height of the window
   local w,h = love.graphics.getDimensions()
 
+  Log.debug('Screen dimensions',w,h)
+
   Push:setupScreen(conf.width, conf.height, w,h, {
     fullscreen = conf.mobile,
     resizable = not conf.mobile,

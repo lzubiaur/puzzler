@@ -2,11 +2,10 @@
 
 # Build the Android apk in debug/release mode or deploy the game to the Love2d app (from the play store)
 
-LOVE_ANDROID=../love-10.2-android-source
+LOVE_ANDROID=../love-android-sdl2
 
 # debug/release
 BUILD=release
-
 # e.g. com.mycompany.myproject
 PACKAGE=com.voodoocactus.games.puzzler
 
@@ -16,7 +15,9 @@ gamestates
 modules
 resources
 conf.lua
-main.lua"
+main.lua
+tests
+"
 
 # Write the debug/release configuration
 echo "return '$BUILD'" > common/build.lua
@@ -42,19 +43,32 @@ if [ "$1" == "app" ]; then
 fi
 
 # Create the game zip. Must not contain the root folder
-rm $LOVE_ANDROID/assets/game.love
-zip -r $LOVE_ANDROID/assets/game.love $FILES -x *.DS_Store
+rm $LOVE_ANDROID/app/src/main/assets/game.love
+zip -r $LOVE_ANDROID/app/src/main/assets/game.love $FILES -x *.DS_Store
 
-pushd ../love-10.2-android-source
+pushd $LOVE_ANDROID
 
+# Old way using Ant
 # Build the native framework
 # ndk-build clean
 # ndk-build
-
 # Build the APK and install/start the app
-ant clean && ant $BUILD && \
-adb uninstall $PACKAGE && \
-adb install "bin/love-android-$BUILD.apk" && \
+# ant clean && ant $BUILD && \
+# adb uninstall $PACKAGE && \
+# adb install "bin/love-android-$BUILD.apk" && \
+# adb shell am start -n "$PACKAGE/.GameActivity" && \
+# adb logcat "SDL/APP":D *:S
+
+# Clean the project
+# gradlew clean
+gradlew uninstallAll
+if [ "$build" == "release" ]; then
+  gradlew installRelease
+else
+  gradlew installDebug
+fi
+# Start the app
 adb shell am start -n "$PACKAGE/.GameActivity" && \
 adb logcat "SDL/APP":D *:S
+
 popd
