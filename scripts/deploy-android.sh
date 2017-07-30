@@ -62,7 +62,7 @@ pushd $LOVE_ANDROID
 # Clean the project
 # gradlew clean
 gradlew uninstallAll
-if [ "$build" == "release" ]; then
+if [ "$BUILD" == "release" ]; then
   gradlew installRelease
 else
   gradlew installDebug
