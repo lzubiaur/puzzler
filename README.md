@@ -1,5 +1,6 @@
 ## TODO
 
+* Provide "more games",twitter,facebook url for desktop platforms too
 * HTML distribution
 * itch.io distribution (win,macos,linux)
 * tips
@@ -15,4 +16,3 @@ HACK
 XXX
 FIXME
 LZU
-
