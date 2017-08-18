@@ -39,7 +39,7 @@ Push      = require 'modules.push'
 Loader    = require 'modules.love-loader'
 Log       = require 'modules.log'
 Bump      = require 'modules.bump'
-STI       = require 'modules.sti'
+-- STI       = require 'modules.sti'
 Tween     = require 'modules.tween'
 Lume      = require 'modules.lume'
 Gamera    = require 'modules.gamera'
@@ -115,14 +115,13 @@ function love.load()
   Log.debug('bit',bit ~= nil)
 
   -- Gets the width and height of the window
-  local w,h = love.graphics.getDimensions()
-
-  Log.debug('Screen dimensions',w,h)
+  -- local w,h = love.graphics.getDimensions()
+  local w,h,flags = love.window.getMode()
 
   Push:setupScreen(conf.width, conf.height, w,h, {
     fullscreen = conf.mobile,
     resizable = not conf.mobile,
-    highdpi = true,
+    highdpi = flags.highdpi,
     canvas = true,  -- Canvas is required to scale the camera properly
     stretched = true, -- Keep aspect ratio or strech to borders
     pixelperfect = false,
