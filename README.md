@@ -1,3 +1,8 @@
+Puzzle game made using Lua/Love2D
+
+![alt tag](design/screenshot.png)
+
+
 ## TODO
 
 * Provide "more games",twitter,facebook url for desktop platforms too
@@ -7,7 +12,7 @@
 * reward player with tips if he watch an ads
 * push notifications
 * rate plugins https://github.com/hotchemi/Android-Rate
-* piece becomes transparent when moving
+* pieces become transparent when moving
 
 Search for the following
 
